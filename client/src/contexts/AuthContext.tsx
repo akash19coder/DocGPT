@@ -1,6 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react"
 import { authenticateUser, loginUser, signUpUser } from "../helpers/api-communicator"
-import { useLocation } from "react-router-dom"
 type User = {
     name: string,
     email: string,

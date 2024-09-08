@@ -309,10 +309,21 @@ textarea {
         width: 100vw;
         height: 70vh;
     }
+    .pdf-window{
+        overflow-x: scroll
+    }
     .flex-item-1-item-2 {
         width: 100vw;
         height: 20vh;
         padding: 1rem 1rem 1rem 1rem;
+    }
+    .chat-box .user-chat-item > div{
+        vertical-align: none;
+        color: red;
+        margin-left: 5px;
+    }
+    .chat-box .gpt-response-item > div{
+        
     }
     textarea {
         width: 80%;

@@ -1,8 +1,7 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef,} from 'react';
 import Navbar from '../components/Navbar';
-import { NavbarProvider, useNavbar } from '../contexts/NavbarContext';
+import {useNavbar } from '../contexts/NavbarContext';
 import InputBox from '../components/InputBox';
-// import Header from '../components/Main/Header';
 import ChatItem from '../components/chat/ChatItem';
 import PdfViewer from '../components/PdfViewer';
 import { useChat } from '../contexts/ChatContext';
@@ -17,23 +16,24 @@ const ChatPage: React.FC = () => {
   const chatRef = useRef<HTMLDivElement>(null);
   const { toggleNavbar } = useNavbar();
   const { chatID } = useParams();
-  console.log('initial chat', chat);
-  console.log(chatID);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const data = await fetchUserMessage(chatID);
-        console.log('fetchUserMessage', data);
         chat.updateUserPdfUrl(data.data.pdfSecureUrl);
         chat.getChatMessages(data.data.conversation);
-        console.log('chat.conversation data', chat.conversation);
       } catch (error) {
         console.error('Error fetching user message:', error);
       }
     };
 
     fetchData();
+    // Set up interval to fetch data every few seconds (e.g., every 5 seconds)
+    const intervalId = setInterval(fetchData, 1000); // 5000 milliseconds = 5 seconds
+
+    // Cleanup function to clear interval when component unmounts or when dependencies change
+    return () => clearInterval(intervalId);
   }, []);
 
   useEffect(() => {
@@ -44,7 +44,6 @@ const ChatPage: React.FC = () => {
   }, [chat.conversation]);
 
   return (
-    <NavbarProvider>
       <div className='main-container'>
         <Navbar />
         <div className='main-flex-item-1'>
@@ -62,7 +61,9 @@ const ChatPage: React.FC = () => {
             </h1>
           </div>
           <div className='chat-box' ref={chatRef}>
-            <PdfViewer />
+            <div className='pdf-window'>
+              <PdfViewer/>
+            </div>
             {chat.conversation.map((item, index) => (
               <ChatItem message={item.content} role={item.role} key={index} />
             ))}
@@ -70,7 +71,6 @@ const ChatPage: React.FC = () => {
           <InputBox />
         </div>
       </div>
-    </NavbarProvider>
   );
 };
 

@@ -24,36 +24,32 @@
 	margin: 0;
 	box-sizing: border-box;
 }
-
-body {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-}
-/* Notifications.css */
-
 .notification {
-    background-color: #f4f4f4; /* Background color of the notification bar */
-    border: 1px solid #ccc; /* Border around the notification bar */
-    padding: 10px; /* Padding around the content */
-    text-align: center; /* Center align the content */
-    max-width: 90%; /* Maximum width of the notification bar */
-    margin: 0 auto; /* Center the notification bar horizontally */
-  }
-  
-  .notification button {
-    margin: 5px; /* Add spacing between buttons */
-    padding: 8px 20px; /* Padding inside the buttons */
-    cursor: pointer; /* Show pointer cursor on hover */
-  }
-  
-  .notification .ok {
-    background-color: blue; /* Blue color for the OK button */
-    color: #fff; /* White text color */
-  }
-  
-  .notification .cancel {
-    background-color: red; /* Red color for the Cancel button */
-    color: #fff; /* White text color */
-  }
+	background-color: #f4f4f4;
+	border: 1px solid #ccc;
+  font-family: apple-font-light;
+	padding: 10px;
+	text-align: center;
+	max-width: 90%;
+	margin: 0 auto;
+}
+
+.notification button {
+	margin: 5px;
+	padding: 8px 20px;
+	cursor: pointer;
+}
+
+.notification .ok {
+	background-color: blue;
+	color: #fff;
+  border: none;
+  border-radius: 3px;
+}
+
+.notification .cancel {
+	background-color: red;
+	color: #fff;
+  border: none;
+  border-radius: 3px;
+}

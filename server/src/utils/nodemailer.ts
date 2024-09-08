@@ -8,7 +8,6 @@ export async function sendVerificationCode(email: string, otp:string) {
     text: "DocGPT verification code",
     html: `
       <div class="container" style="max-width: 600px; margin: 0 auto; padding: 20px; background-color: #ffffff; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
-        <img src="" alt="DocGPT Logo">
         <h2>Email Verification Code</h2>
         <p>Please use the following code to verify your email address:</p>
         <div class="verification-code" style="font-size: 24px; font-weight: bold; color: #333333;">${otp}</div>

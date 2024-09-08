@@ -11,5 +11,6 @@ export const getUserFromToken = (
 
   const decoded = jwt.verify(userToken, privateKey);
   req.locals = decoded;
+  console.log('I am exiting getUserFromToken');
   next();
 };

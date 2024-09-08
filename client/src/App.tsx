@@ -6,8 +6,6 @@ import Authenticaton from './pages/Authentication';
 import { Routes, Route } from 'react-router';
 
 import { pdfjs } from 'react-pdf';
-import VerifyOTP from './pages/VerifyOTP';
-import Notifications from './components/Modals/Notifications';
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
    'pdfjs-dist/build/pdf.worker.min.js',
@@ -23,7 +21,6 @@ function App() {
          <Route path="/signup" element={<Authenticaton />} />
          <Route path="/chat/:chatID?" element={<ChatPage />} />
          <Route path="/verifyOTP/:otp?" element={<Authenticaton />} />
-         <Route path='/notification' element = {<Notifications message='I am notification' buttonName='OK'/>}/>
       </Routes>
    );
 }

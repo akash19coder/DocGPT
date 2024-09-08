@@ -1,5 +1,4 @@
 import { createContext, useContext, useState, ReactNode, useEffect } from "react";
-import { fetchUserMessage } from "../helpers/api-communicator";
 import { generateUniqueID } from "../helpers/uuid";
 
 type UserChat = {
@@ -18,15 +17,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     const [conversation, setConversation] = useState<object[]>([]); // Adjust the type according to your conversation structure
     const [pdfSecureUrl, setPdfSecureUrl] = useState<string | null>(null);
     const [chatID, setChatID] = useState<string>('');
-
-    // useEffect(() => {
-    //     fetchUserMessage(chatID).then((data) => {
-    //         console.log(data.data.conversation);
-    //         setConversation(data.data.conversation);
-    //     })
-    // }, [])
-
-
+    
     const pushUserMessagesToConversation = (message: object) => { // Adjust the type according to your message structure
         setConversation((prev) => [...prev, message]);
     }
@@ -47,7 +38,6 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
         const uniqueID = generateUniqueID();
         setChatID(uniqueID);
     }, [])
-
 
     const value = {
         conversation,

@@ -19,9 +19,7 @@ const ChatHistory = () => {
 
   useEffect(() => {
     fetchAllChats().then((data) => {
-
       setChatHistoryTitle(data.data.allChat);
-      console.log(chatHistoryTitle);
     });
   }, []);
 
@@ -34,8 +32,6 @@ const ChatHistory = () => {
         </div>
       ) : (
         reversedChatHistoryTitle.map((item) => {
-          console.log('It is chatID', item.chatID);
-          console.log('It is title', item.title);
           return (
             <ChatItem key={item.chatID} title={item.title} chatID={item.chatID} />
           );

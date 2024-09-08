@@ -1,7 +1,7 @@
 import { useAuth } from '../contexts/AuthContext';
 import Button from '../components/Button';
 import { toast } from 'react-hot-toast';
-import { useNavigate, useParams } from 'react-router';
+import { useNavigate } from 'react-router';
 import '../../src/assets/css/Form.css';
 import { useState } from 'react';
 import { sendOTP } from '../helpers/api-communicator';
@@ -15,7 +15,7 @@ const Authentication = () => {
     const [password, setPassword] = useState<string>();
     const [otp, setOtp] = useState<string>();
   
-    const params = useParams();
+    
     const auth = useAuth();
     const navigate = useNavigate();
 
@@ -29,15 +29,14 @@ const Authentication = () => {
                     const data = await auth?.signup(username, email, password);
                     toast.success(`${data.name.toUpperCase() }, Please verify your email`, { id: 'signup' })
                     setVerified(true);
-                    setIsLogged(true);
                     navigate('/verifyOTP')
         
                 }
                 else {
-                    toast.error('Enter email or password', { id: 'login' })
+                    toast.error('Enter email or password', { id: 'signup' })
                 }
             }
-            else if (isLogged) {
+            else if (verified) {
                 toast.loading('Verifying', { id: 'otp' });
                 console.log('sending otp to the server...');
                 const data = await sendOTP(otp);
@@ -45,7 +44,7 @@ const Authentication = () => {
                 toast.success(`${data.message}`, { id: 'otp' });
                 navigate('/')
             }
-            else {
+            else{
                 if (email && password) {
                     toast.loading('Logining in...', { id: 'login' })
                     const data = await auth?.login(email, password);
@@ -68,7 +67,7 @@ const Authentication = () => {
                 <h1>DocGPT</h1>
                 <h4>Hey folks! Welcome Back</h4>
                 <form onSubmit={handleSubmit}>
-                    {isLogged && verified ? (
+                    {verified ? (
                         <>
                             <label htmlFor="">Enter OTP</label>
                             <input value={otp} type="text" name='otp' onChange={(e) => setOtp(e.target.value)} />

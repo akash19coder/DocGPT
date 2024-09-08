@@ -52,5 +52,5 @@ export const pdfDataExtractor = (
       console.error("Error updating conversation:", error.message);
       return null;
     }
-  });
+  }); 
 };

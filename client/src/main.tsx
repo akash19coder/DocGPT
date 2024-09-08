@@ -4,7 +4,7 @@ import App from './App.tsx'
 import { Toaster } from 'react-hot-toast'
 import axios from 'axios';
 
-axios.defaults.baseURL = 'http://localhost:3001';
+axios.defaults.baseURL = 'https://docgpt-1-0-1.onrender.com';
 axios.defaults.withCredentials = true;
 
 import { BrowserRouter as Router } from 'react-router-dom'

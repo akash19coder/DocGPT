@@ -1,5 +1,17 @@
 import mongoose from "mongoose";
 
+const ConversationSchema = new mongoose.Schema(
+  {
+    role: {
+      type: String,
+    },
+    content: {
+      type: String,
+    }
+  },
+  { _id: false } 
+);
+
 const ChatHistorySchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -27,16 +39,7 @@ const ChatHistorySchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-  conversation: [
-    {
-     role: {
-      type: String,
-     },
-     content: {
-      type: String,
-     }
-    },
-  ],
-})
+  conversation: [ConversationSchema], 
+});
 
 export default mongoose.model("ChatHistory", ChatHistorySchema);

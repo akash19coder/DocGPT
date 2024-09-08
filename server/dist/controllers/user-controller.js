@@ -26,8 +26,6 @@ class userController {
             }
         }
         catch (error) {
-            // Handle any unexpected errors
-            console.error("Error in loginUser:", error);
             return res.status(500).json({
                 error: "Internal Server Error",
                 message: "Something went wrong.",
@@ -78,14 +76,11 @@ class userController {
         try {
             // Check if the email already exists
             const user = await User.findOne({ email: res.locals.jwtData.name });
-            console.log(user);
             if (!user) {
                 return res
                     .status(401)
                     .json({ error: "Bad Request", message: "User not registered" });
             }
-            console.log('User email', user.email);
-            console.log('Cookie email', res.locals.jwtData.name);
             if (user.email !== res.locals.jwtData.name) {
                 return res.status(401).json({ message: "Permission Denied" });
             }

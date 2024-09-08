@@ -12,7 +12,6 @@ class chatController {
     next: NextFunction,
   ) => {
     try {
-      console.log("Get use chat controller", req.locals.id);
       const chathistory = await ChatHistory.findOne({
         chatID: req.params.chatID,
       });
@@ -28,19 +27,16 @@ class chatController {
     next: NextFunction,
   ) => {
     try {
-      console.log(req.body);
       const data = {
         role: "user",
         content: req.body.message,
       };
 
-      console.log(req.locals);
       const user = await ChatHistory.findOneAndUpdate(
         { chatID: req.params.chatID },
         { $push: { conversation: data } },
         { new: true },
       );
-      console.log(user);
       next();
     } catch (error) {
       console.error("An error occurred:", error);
