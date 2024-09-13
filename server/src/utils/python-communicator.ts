@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import ChatHistory from "../models/ChatHistory.js";
+import ChatHistory from "../models/chathistory.model.js";
 
 import { spawn } from "child_process";
 import { fileURLToPath } from "url";
@@ -37,10 +37,10 @@ export const pdfDataExtractor = (
       const randomLength = Math.floor(Math.random() * 3) + 3;
       let title = conversationData.content
         .split("\n")
-        .slice(0,randomLength ) 
+        .slice(0, randomLength)
         .join(" ");
-      if(title.length > 35){
-        title = title.substring(0,35);
+      if (title.length > 35) {
+        title = title.substring(0, 35);
       }
       const userChatHistory = await ChatHistory.findByIdAndUpdate(
         { _id: req.locals },
@@ -52,5 +52,5 @@ export const pdfDataExtractor = (
       console.error("Error updating conversation:", error.message);
       return null;
     }
-  }); 
+  });
 };
