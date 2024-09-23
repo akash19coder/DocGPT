@@ -18,6 +18,7 @@ app.use(cookieParser(process.env.COOKIE_SECRET));
 import userRoutes from "./routes/user.routes.js";
 
 // Routes
+app.use("/api/v1/document/", uploadRoutes);
 app.use("/api/v1/user", userRoutes);
 
 export { app };

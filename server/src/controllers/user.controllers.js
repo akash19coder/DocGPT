@@ -161,3 +161,9 @@ export const resetPassword = async (req, res) => {
     });
   }
 };
+
+// chat page displays as user registers
+// uploads a file
+// chat/1lkjlkje34rqlwk234lk2 page opens up with an id
+// chat begins
+// those three buttons are for special requests -simplification, definition search, query)
