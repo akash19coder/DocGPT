@@ -9,7 +9,7 @@ class chatController {
   static getChatHistory = async (
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction,    
   ) => {
     try {
       const chathistory = await ChatHistory.findOne({

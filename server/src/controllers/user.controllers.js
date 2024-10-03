@@ -1,9 +1,8 @@
 import { User } from "../models/user.model.js";
-import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import crypto from "crypto";
 
-export const signupUser = async (req, res, next) => {
+export const signupUser = async (req, res) => {
   try {
     const { username, firstname, lastname, email, password } = req.body;
     console.log(username, firstname, lastname, email, password);
@@ -43,7 +42,7 @@ export const signupUser = async (req, res, next) => {
   }
 };
 
-export const signinUser = async (req, res, next) => {
+export const signinUser = async (req, res) => {
   try {
     const { username, password } = req.body;
 
@@ -155,6 +154,18 @@ export const resetPassword = async (req, res) => {
     // });
 
     res.status(200).json(new ApiResponse(200, "Password reset successful"));
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      error: error.message,
+    });
+  }
+};
+
+export const signOut = async (req, res) => {
+  try {
+    req.session = null;
+
+    res.status(200).json(new ApiResponse(200, "User signed out successfully"));
   } catch (error) {
     res.status(error.statusCode || 500).json({
       error: error.message,

@@ -1,14 +1,9 @@
 import { uploadFileOnCloudinary } from "../utils/cloudinary";
 
 export const uploadFile = async (req, res) => {
-  // upload file on cloudinay
-  // get pdf link
-  // load pdf data
-  //if handle live link = continue
-  //else !upload, store in local FS, store and delete
-  // split extracted text
-  // embed text
-  // store in pinecone vector database
+    //store pdf in FileSystem
+    //split,embed and store in vector database
+    //generate a chatID and send it to frontend
   try {
     await uploadFileOnCloudinary();
     //   // 1. Handle PDF upload and text extraction
