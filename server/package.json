@@ -6,6 +6,8 @@
   "type": "module",
   "dependencies": {
     "@langchain/community": "^0.2.33",
+    "@langchain/pinecone": "^0.1.1",
+    "@pinecone-database/pinecone": "^3.0.3",
     "bcrypt": "^5.1.1",
     "cloudinary": "^1.41.3",
     "concurrently": "^8.2.2",

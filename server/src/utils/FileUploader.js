@@ -7,18 +7,22 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-export const uploadFileOnCloudinary = async () => {
+export const uploadFileOnCloudinary = async (file) => {
+  const statTime = Date.now();
   const uploadResult = await cloudinary.uploader
-    .upload(
-      "https://res.cloudinary.com/demo/image/upload/getting-started/shoes.jpg",
-      {
-        public_id: "shoes",
-      },
-    )
+    .upload(file.path, {
+      public_id: "pdf",
+      // public_id: `${req.locals.originalName}`,
+      resource_type: "raw",
+      //         asset_folder: req.locals.id,
+      //         use_asset_folder_as_public_id_prefix: true,
+    })
     .catch((error) => {
       console.log(error);
     });
-
+  const endTime = Date.now();
+  const uploadDuration = endTime - statTime;
+  console.log(`Upload duration: ${uploadDuration} ms`);
   console.log(uploadResult);
 };
 
