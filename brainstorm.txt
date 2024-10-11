@@ -1,0 +1,4 @@
+// Tommorrow's Todo List
+   - Implement pdf parser using Langchain tool
+   - Store data as per namespaces
+   - Make it queryable 
