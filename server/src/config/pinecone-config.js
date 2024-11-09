@@ -1,8 +1,8 @@
-// import { Pinecone as PineconeClient } from "@pinecone-database/pinecone";
-// const pinecone = new PineconeClient();
+import { Pinecone as PineconeClient } from "@pinecone-database/pinecone";
+const pinecone = new PineconeClient();
 
-// export const configPinecone = () => {
-//   const pineconeIndex = pinecone.Index(process.env.PINECONE_INDEX);
+export const configPinecone = () => {
+  const pineconeIndex = pinecone.Index(process.env.PINECONE_INDEX);
 
-//   return pineconeIndex;
-// };
+  return pineconeIndex;
+};

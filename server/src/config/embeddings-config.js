@@ -1,5 +1,8 @@
-// import { OpenAIEmbeddings } from "@langchain/openai";
+import { GoogleGenerativeAIEmbeddings } from "@langchain/google-genai";
+import { TaskType } from "@google/generative-ai";
 
-// export const embeddings = new OpenAIEmbeddings({
-//   model: "text-embedding-3-small",
-// });
+export const embeddings = new GoogleGenerativeAIEmbeddings({
+  model: "text-embedding-004", // 768 dimensions
+  taskType: TaskType.RETRIEVAL_DOCUMENT,
+  title: "Document title",
+});

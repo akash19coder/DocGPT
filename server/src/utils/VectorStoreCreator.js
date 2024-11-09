@@ -1,20 +1,28 @@
-import { loadDocument, splitDocument, embedDocument } from "./documentUtils";
+import { loadDocument, splitDocument, embedDocument } from "./documentUtils.js";
 // import { PineconeStore } from "@langchain/pinecone";
-// import { embeddings } from "../config/embeddings-config.js";
+import { embeddings } from "../config/embeddings-config.js";
 import { configPinecone } from "../config/pinecone-config.js";
 
-async function storeDocumentInPinecone(namespace, document) {
-  const pineconeIndex = configPinecone();
+// init pinecone   --> Done
+// init embeddings --> Done
+// check there initalization and API Key errors --> Done
 
-  const vectorStore = await PineconeStore.fromExistingIndex(embeddings, {
-    pineconeIndex,
-    maxConcurrency: 5,
-    namespace: namespace,
-  });
+// implement storeDoc --> Done this
+// implement splitDoc -->
+// implement embedDoc -->
 
-  const loadedDoc = await loadDocument(document); // Load the document
-  const splitDocs = splitDocument(loadedDoc); // Split the document into manageable parts
-  const embeddings = await embedDocument(splitDocs); // Embed the split documents
+export async function storeDocumentInPinecone(namespace, document) {
+  // const pineconeIndex = configPinecone();
+  // const vectorStore = await PineconeStore.fromExistingIndex(embeddings, {
+  //   pineconeIndex,
+  //   maxConcurrency: 5,
+  //   namespace: namespace,
+  // });
+
+  const loadedDoc = await loadDocument(); // Load the document
+  const splitDocs = await splitDocument(loadedDoc); // Split the document into manageable parts
+  console.log(splitDocs);
+  const embedDocs = await embedDocument(splitDocs); // Embed the split documents
 
   // Upsert embeddings into Pinecone
   await vectorStore.upsert({

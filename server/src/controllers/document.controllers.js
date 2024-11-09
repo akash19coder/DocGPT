@@ -1,21 +1,24 @@
 import { uploadFileOnCloudinary } from "../utils/FileUploader.js";
 import { Chat } from "../models/chathistory.model.js";
 import { generateUUID } from "../utils/UUIDGenerator.js";
-import { extractPDF } from "../utils/PDFExtractor.js";
+import { storeDocumentInPinecone } from "../utils/VectorStoreCreator.js";
 // import { PineconeStore } from "@langchain/pinecone";
 // import { configPinecone } from "../config/pinecone-config.js";
 // import { embeddings } from "../config/embeddings-config.js";
 
 export const uploadFile = async (req, res) => {
   //store pdf in FileSystem
-  //split,embed and store in vector database
+  //load,split,embed and store in vector database
   //generate a chatID and send it to frontend
   const { destination, filename } = req.file;
   try {
     await uploadFileOnCloudinary(req.file);
-    extractPDF(`${destination}/${filename}`);
-    // const pdfText = await extractTextFromPDF(req.file);
 
+    await storeDocumentInPinecone(
+      "blah blah blah",
+      `${destination}/${filename}`,
+    );
+    // const pageContent =  await extractPDF(`${destination}/${filename}`);
     // const pineconeIndex = configPinecone();
 
     // const docs = pdfText
