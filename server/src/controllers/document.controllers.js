@@ -12,12 +12,10 @@ export const uploadFile = async (req, res) => {
   //generate a chatID and send it to frontend
   const { destination, filename } = req.file;
   try {
+    const chatId = generateUUID();
     await uploadFileOnCloudinary(req.file);
 
-    await storeDocumentInPinecone(
-      "blah blah blah",
-      `${destination}/${filename}`,
-    );
+    await storeDocumentInPinecone(chatId, `${destination}/${filename}`);
     // const pageContent =  await extractPDF(`${destination}/${filename}`);
     // const pineconeIndex = configPinecone();
 
@@ -34,7 +32,7 @@ export const uploadFile = async (req, res) => {
     // });
 
     // 4. Generate and return chat ID
-    const chatId = generateUUID();
+
     console.log(chatId);
     const chatHistory = new Chat({ chatId });
     await chatHistory.save();

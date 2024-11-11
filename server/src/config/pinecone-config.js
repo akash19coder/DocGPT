@@ -1,8 +1,18 @@
-import { Pinecone as PineconeClient } from "@pinecone-database/pinecone";
-const pinecone = new PineconeClient();
+import { Pinecone } from "@pinecone-database/pinecone";
 
-export const configPinecone = () => {
-  const pineconeIndex = pinecone.Index(process.env.PINECONE_INDEX);
+const pc = new Pinecone({
+  apiKey: process.env.PINECONE_API_KEY,
+});
 
-  return pineconeIndex;
-};
+await pc.createIndex({
+  name: "docgpt",
+  dimension: 768,
+  spec: {
+    serverless: {
+      cloud: "aws",
+      region: "us-east-1",
+    },
+  },
+});
+
+export { pc };
