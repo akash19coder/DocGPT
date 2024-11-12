@@ -1,56 +1,30 @@
-import { Request, Response, NextFunction } from "express";
-import OpenAI from "openai";
-import User from "../models/user.model.js";
-import ChatHistory from "../models/chathistory.model.js";
+// watch a video on RAG with Pinecone
+// user prompt --> needs to be embedded as well
 
-// const openai = new OpenAI();
+import { embeddings } from "../config/embeddings-config.js";
+import { pc } from "../config/pinecone-config.js";
+import { embedDocument } from "../utils/documentUtils.js";
 
-class chatController {
-  static getChatHistory = async (
-    req: Request,
-    res: Response,
-    next: NextFunction,    
-  ) => {
-    try {
-      const chathistory = await ChatHistory.findOne({
-        chatID: req.params.chatID,
-      });
-      res.status(200).json(chathistory);
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
+// how to feed it into vector DB for similarity search --> .query() to query
 
-  static storeUserChatMessages = async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ) => {
-    try {
-      const data = {
-        role: "user",
-        content: req.body.message,
-      };
+// new prompt and llm feeding
+export const normalReply = async (req, res) => {
+  console.log(req.body);
+  const { query } = req.body;
+  console.log(query);
+  const embeddedQuery = await embedDocument([query]);
+  console.log(embeddedQuery[0].values);
+  const result = await pc
+    .index("docgpt")
+    .namespace("ceac1a73-a3ce-404e-b4e6-e3b3f30af498")
+    .query({
+      vector: embeddedQuery[0].values,
+      topK: 3,
+      includeValues: true,
+    });
+  console.log(result);
+};
 
-      const user = await ChatHistory.findOneAndUpdate(
-        { chatID: req.params.chatID },
-        { $push: { conversation: data } },
-        { new: true },
-      );
-      next();
-    } catch (error) {
-      console.error("An error occurred:", error);
-    }
-  };
-  
-  static fetchAllChats = async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ) => {
-    const allChat = await ChatHistory.find({userId: req.locals.id});
-    res.status(200).json({allChat});
-  };
+const summarize = () => {};
 
-}
-export default chatController;
+const definitionSearch = () => {};
