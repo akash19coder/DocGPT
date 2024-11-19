@@ -5,7 +5,7 @@ const pc = new Pinecone({
 });
 
 await pc.createIndex({
-  name: "c",
+  name: "b",
   dimension: 768,
   spec: {
     serverless: {
