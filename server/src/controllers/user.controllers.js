@@ -1,19 +1,36 @@
+import validator from "validator";
 import { User } from "../models/user.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import crypto from "crypto";
+import { OTP } from "../models/otp.model.js";
+import { sendVerificationCode } from "../utils/nodemailer.js";
+
+export const generateAccessAndRefreshToken = async (userId) => {
+  const user = await User.findById(userId);
+  const accessToken = await user.generateAccessToken();
+  const refreshToken = await user.generateRefreshToken();
+
+  user.refreshToken = refreshToken;
+  await user.save({ validationBeforeSave: false });
+
+  return { accessToken, refreshToken };
+};
 
 export const signupUser = async (req, res) => {
   try {
-    const { username, firstname, lastname, email, password } = req.body;
-    console.log(username, firstname, lastname, email, password);
+    const { username, name, email, password } = req.body;
+    console.log(username, name, email, password);
+
+    // Finding empty field
     if (
-      [username, firstname, lastname, email, password].some(
+      [username, name, email, password].some(
         (field) => field?.trim() === "" || field === undefined,
       )
     ) {
       throw new Error("An input field is empty");
     }
 
+    // Checking if user already exists
     const existedUser = await User.findOne({
       $or: [{ username }, { email }],
     });
@@ -24,15 +41,12 @@ export const signupUser = async (req, res) => {
 
     const user = await User.create({
       username: username,
-      firstName: firstname,
-      secondName: lastname,
+      name: name,
       email: email,
       password: password,
     });
 
-    const createdUser = await User.findById(user._id).select(
-      "-password -refreshToken",
-    );
+    const createdUser = await User.findById(user._id).select("-password");
 
     return res.status(200).json(new ApiResponse(200, createdUser));
   } catch (error) {
@@ -44,30 +58,58 @@ export const signupUser = async (req, res) => {
 
 export const signinUser = async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { email, password } = req.body;
 
+    // Checking if a field is empty
     if (
-      [username, password].some(
+      [email, password].some(
         (field) => field?.trim() === "" || field === undefined,
       )
     ) {
       throw new Error("An input field is empty or undefined");
     }
 
-    const existedUser = await User.findOne({
-      $or: [{ username }, { password }],
+    const user = await User.findOne({
+      $or: [{ email }, { password }],
     });
-    console.log(existedUser);
-    if (!existedUser) {
+    console.log(user);
+    if (!user) {
       throw new Error("User not registered");
     }
 
-    const passwordCorrect = await existedUser.isPasswordCorrect(password);
+    const passwordCorrect = await user.isPasswordCorrect(password);
 
     if (!passwordCorrect) {
       throw new Error("User password wrong");
     }
-    res.status(200).json(new ApiResponse(200, "user logged in successfully"));
+
+    const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
+      user._id,
+    );
+
+    const loggedInUser = await User.findById(user._id).select(
+      "-password -refreshToken",
+    );
+    const options = {
+      httpOnly: true,
+      secure: true,
+    };
+
+    res
+      .status(200)
+      .cookie("refreshToken", refreshToken, options)
+      .cookie("accessToken", accessToken, options)
+      .json(
+        new ApiResponse(
+          200,
+          {
+            user: loggedInUser,
+            refreshToken,
+            accessToken,
+          },
+          "user logged in successfully",
+        ),
+      );
   } catch (error) {
     res.status(500).json({
       error: error.message,
@@ -77,12 +119,11 @@ export const signinUser = async (req, res) => {
 
 export const requestPasswordReset = async (req, res) => {
   try {
-    console.log("i am otp");
+    console.log("i have entered reset controller");
     const { email } = req.body;
-    console.log(email);
 
     // Validate email
-    if (!email || !/\S+@\S+\.\S+/.test(email)) {
+    if (!validator.isEmail(email)) {
       throw new Error("Invalid email address");
     }
 
@@ -92,25 +133,31 @@ export const requestPasswordReset = async (req, res) => {
       throw new Error("User not found");
     }
 
+    console.log("i have found user");
     // Generate OTP
     const otp = crypto.randomInt(100000, 999999).toString();
-    const otpExpiry = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes from now
 
-    // Store OTP in user document
-    const newUserData = await User.updateOne(
-      { _id: user._id },
-      {
-        resetPasswordOtp: otp,
-        resetPasswordOtpExpiry: otpExpiry,
-      },
-    );
-    console.log(newUserData);
-    // Send OTP to user's email
-    // await sendEmail({
-    //   to: user.email,
-    //   subject: "Password Reset OTP",
-    //   text: `Your OTP for password reset is: ${otp}. It will expire in 15 minutes.`,
-    // });
+    // Check if an OTP already exists for this user
+    const existingOTP = await OTP.findOne({
+      userId: user._id,
+      purpose: "PASSWORD_RESET",
+      verified: false,
+    });
+
+    if (existingOTP) {
+      // Update existing OTP
+      existingOTP.otp = otp;
+      await existingOTP.save();
+    } else {
+      // Create OTP document
+      await OTP.create({
+        userId: user._id,
+        otp: otp,
+        purpose: "PASSWORD_RESET",
+      });
+    }
+
+    await sendVerificationCode(user.email, otp);
 
     res.status(200).json(new ApiResponse(200, "OTP sent to email"));
   } catch (error) {
@@ -120,39 +167,41 @@ export const requestPasswordReset = async (req, res) => {
   }
 };
 
+//TODO: it needs more edge cases handling
 export const resetPassword = async (req, res) => {
   try {
-    const { email, otp, newPassword } = req.body;
+    const user = req.user;
 
-    // Validate inputs
-    if (!email || !otp || !newPassword) {
-      throw new Error("All fields are required");
+    const { otp, password } = req.body;
+
+    if (!otp || !password) {
+      throw new Error("Missing required fields");
     }
 
-    // Find user and check OTP
-    const user = await User.findOne({
-      email,
-      resetPasswordOtp: otp,
-      resetPasswordOtpExpiry: { $gt: new Date() },
+    // Find the OTP document
+    const otpDoc = await OTP.findOne({
+      userId: user._id,
+      purpose: "PASSWORD_RESET",
     });
 
-    if (!user) {
-      throw new Error("Invalid or expired OTP");
+    console.log(otpDoc);
+    if (!otpDoc) {
+      throw new Error("OTP expired or not found");
+    }
+
+    // Verify OTP
+    if (otpDoc.otp !== otp) {
+      throw new Error("Incorrect OTP");
     }
 
     // Update password
-    user.password = newPassword;
-    user.resetPasswordOtp = undefined;
-    user.resetPasswordOtpExpiry = undefined;
-    await user.save();
+    const loggedInUser = await User.findOne({ _id: user._id });
+    loggedInUser.password = password;
+    await loggedInUser.save();
 
-    // Send confirmation email
-    // await sendEmail({
-    //   to: user.email,
-    //   subject: "Password Reset Successful",
-    //   text: "Your password has been successfully reset.",
-    // });
-
+    // Mark OTP as verified
+    otpDoc.verified = true;
+    await otpDoc.save();
     res.status(200).json(new ApiResponse(200, "Password reset successful"));
   } catch (error) {
     res.status(error.statusCode || 500).json({
@@ -163,9 +212,26 @@ export const resetPassword = async (req, res) => {
 
 export const signOut = async (req, res) => {
   try {
-    req.session = null;
-
-    res.status(200).json(new ApiResponse(200, "User signed out successfully"));
+    await User.findByIdAndUpdate(
+      req.use._id,
+      {
+        $unset: {
+          refreshToken: 1,
+        },
+      },
+      {
+        new: true,
+      },
+    );
+    options = {
+      httpOnly: true,
+      secure: true,
+    };
+    res
+      .status(200)
+      .cookie("refreshToken", options)
+      .cookie("accessToken", options)
+      .json(new ApiResponse(200, {}, "User logged out"));
   } catch (error) {
     res.status(error.statusCode || 500).json({
       error: error.message,
@@ -173,8 +239,48 @@ export const signOut = async (req, res) => {
   }
 };
 
-// chat page displays as user registers
-// uploads a file
-// chat/1lkjlkje34rqlwk234lk2 page opens up with an id
-// chat begins
-// those three buttons are for special requests -simplification, definition search, query)
+export const getUserProfile = async (req, res) => {
+  try {
+    const user = req.user;
+    const loggedUser = await User.findById(user._id);
+
+    if (!loggedUser) {
+      throw new Error("User not found");
+    }
+    res.status(200).json(loggedUser);
+  } catch (error) {
+    res.status(500).json({ erroe: error.message });
+  }
+};
+
+export const updateImageUrl = async (req, res) => {
+  try {
+    const { imageUrl } = req.body;
+    const user = req.user;
+
+    if (!imageUrl?.trim()) {
+      throw new Error("Image URL is required");
+    }
+
+    // Validate and update the user
+    const updatedUser = await User.findByIdAndUpdate(
+      user._id,
+      { imageUrl },
+      { new: true, runValidators: true },
+    ).select("-password -refreshToken");
+
+    if (!updatedUser) {
+      throw new Error("User not found");
+    }
+
+    res
+      .status(200)
+      .json(
+        new ApiResponse(200, updatedUser, "Profile image updated successfully"),
+      );
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      error: error.message,
+    });
+  }
+};

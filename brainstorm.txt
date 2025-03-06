@@ -1,4 +1,2 @@
-// Tommorrow's Todo List
-   - Implement pdf parser using Langchain tool
-   - Store data as per namespaces
-   - Make it queryable 
+// Implement Auth Feature
+   - fixed app start even with DB connection error with process.exit(1);

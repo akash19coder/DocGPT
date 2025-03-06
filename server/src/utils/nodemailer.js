@@ -1,11 +1,11 @@
 import { transporter } from "../config/nodemailer-config.js";
-import { generateOTP, storeOTP } from "./otp.js";
-export async function sendVerificationCode(email: string, otp:string) {
+// import { generateOTP, storeOTP } from "./otp.js";
+export async function sendVerificationCode(email, otp) {
   const info = await transporter.sendMail({
     from: '"DocGPT 👻" <docgpt.app@gmail.com>',
     to: `${email}`,
-    subject: "DocGPT email verification code ✔",
-    text: "DocGPT verification code",
+    subject: "DocGPT OTP code ✔",
+    text: "DocGPT OTP code",
     html: `
       <div class="container" style="max-width: 600px; margin: 0 auto; padding: 20px; background-color: #ffffff; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
         <h2>Email Verification Code</h2>
