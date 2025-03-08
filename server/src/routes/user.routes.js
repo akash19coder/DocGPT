@@ -1,5 +1,6 @@
 import Router from "express";
 import {
+  getUserProfile,
   requestPasswordReset,
   resetPassword,
   signinUser,
@@ -15,5 +16,6 @@ router.route("/signin").post(signinUser);
 router.route("/request-password-reset").post(requestPasswordReset);
 router.use("/reset-password", userAuth, resetPassword);
 router.use("/signout", userAuth, signOut);
+router.use("/profile", userAuth, getUserProfile);
 
 export default router;

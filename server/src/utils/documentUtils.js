@@ -2,8 +2,8 @@
 // import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 // import { embeddings } from "../config/embeddings-config.js";
 
-// export const loadDocument = async () => {
-//   const loader = new PDFLoader("./uploads/programmer.pdf");
+// export const documentLoader = async () => {
+//   const loader = new PDFLoader("./akashsah/akashsah.pdf");
 //   const doc = await loader.load();
 
 //   // console.log("i am pageContent", doc[100].pageContent);
@@ -29,19 +29,26 @@
 
 //   const end = Date.now();
 //   console.log("Time taken to perform split operation -", end - start);
-//   // console.log("i am transformed splits", transformedSplits);
+//   console.log("i am transformed splits", transformedSplits);
 
 //   return transformedSplits;
 // };
 
 // export const embedDocument = async (textChunks) => {
 //   try {
-//     const embeddedChunks = await embeddings.embedDocuments(textChunks);
+//     // First, extract just the text content from the chunks
+//     const texts = textChunks.map((chunk) => chunk.pageContent);
 
-//     // Transform the embedded chunks into the desired format
+//     // Get embeddings for all texts
+//     const embeddedChunks = await embeddings.embedDocuments(texts);
+
+//     // Format for Pinecone - each record needs id, values, and metadata
 //     const formattedChunks = embeddedChunks.map((embedding, index) => ({
-//       id: String.fromCharCode(65 + index), // Converts 0 -> 'A', 1 -> 'B', etc.
+//       id: `chunk_${index}`, // More robust ID format
 //       values: embedding,
+//       metadata: {
+//         text: texts[index], // Store original text as metadata
+//       },
 //     }));
 
 //     return formattedChunks;

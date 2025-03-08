@@ -1,27 +1,54 @@
-import { uploadFileOnCloudinary } from "../utils/FileUploader.js";
-import { Chat } from "../models/chathistory.model.js";
-import { generateUUID } from "../utils/UUIDGenerator.js";
-// import { storeDocumentInPinecone } from "../utils/VectorStoreCreator.js";
+import { getEmbedDocument } from "../utils/embedDocument.js";
+import { getLoadedDocument } from "../utils/loadDocument.js";
+import {
+  deleteVectorFromPinecone,
+  queryVectorFromPinecone,
+  updateVectorInPinecone,
+  upsertVectorToPinecone,
+} from "../utils/pinecone.js";
+import { getSplitDocument } from "../utils/splitDocument.js";
+import { getUserUploadedFileName } from "../utils/userUploadedFileName.js";
 
-export const uploadFile = async (req, res) => {
-  const { destination, filename } = req.file;
-  try {
-    const chatId = generateUUID();
+export const uploadDocument = async (req, res) => {
+  const fileName = getUserUploadedFileName("akash_sah"); // update it with req.user.username; using cookies
 
-    await uploadFileOnCloudinary(req.file);
-
-    //convert it into promise
-    await storeDocumentInPinecone(chatId, `${destination}/${filename}`);
-
-    console.log(chatId);
-    const chatHistory = new Chat({ chatId });
-    await chatHistory.save();
-
-    res.json({ chatId });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  const filePath = `${process.cwd()}/data/akash_sah/${fileName[0]}`;
+  if (!filePath) {
+    throw new Error("file path invalid");
   }
+
+  //TODO: convert each util into promises and do then()
+  const loadedDocument = await getLoadedDocument(filePath);
+  if (!loadedDocument) {
+    throw new Error("Unavailabe Loaded Document");
+  }
+
+  const splitDocument = await getSplitDocument(loadedDocument);
+  if (!splitDocument) {
+    throw new Error("Unavailable split document");
+  }
+
+  const embedDocument = await getEmbedDocument(splitDocument);
+  if (!embedDocument) {
+    throw new Error("Unavailable embed Document");
+  }
+  const response = await upsertVectorToPinecone(embedDocument);
+  console.log(response);
+  res.status(200).json("file saved successfully");
 };
 
-export const deleteFile = () => {};
-export const updateFile = () => {};
+export const deleteDocument = async (req, res) => {
+  const { id } = req.params;
+
+  await deleteVectorFromPinecone(id);
+};
+
+export const updateDocument = async (req, res) => {
+  const { id } = req.params;
+  await updateVectorInPinecone(id);
+};
+
+export const queryDocument = async (req, res) => {
+  const { id } = req.params;
+  await queryVectorFromPinecone(id, "What is my BMI?");
+};

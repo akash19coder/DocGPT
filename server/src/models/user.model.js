@@ -2,7 +2,7 @@ import mongoose, { Schema } from "mongoose";
 import validator from "validator";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { Chat } from "./chathistory.model.js";
+import { Chat } from "./chat.model.js";
 import { type } from "os";
 
 const userSchema = new mongoose.Schema(

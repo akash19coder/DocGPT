@@ -4,6 +4,8 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import crypto from "crypto";
 import { OTP } from "../models/otp.model.js";
 import { sendVerificationCode } from "../utils/nodemailer.js";
+import { mkdir } from "fs";
+import { join } from "path";
 
 export const generateAccessAndRefreshToken = async (userId) => {
   const user = await User.findById(userId);
@@ -39,16 +41,22 @@ export const signupUser = async (req, res) => {
       throw new Error("User already exist");
     }
 
-    const user = await User.create({
-      username: username,
-      name: name,
-      email: email,
-      password: password,
+    //Making User's director to store their uploaded PDF.
+    mkdir(`data/${username}`, { recursive: true }, async (err) => {
+      if (err) throw new Error("Failed to create User namespace");
+      else {
+        const user = await User.create({
+          username: username,
+          name: name,
+          email: email,
+          password: password,
+        });
+
+        const createdUser = await User.findById(user._id).select("-password");
+
+        return res.status(200).json(new ApiResponse(200, createdUser));
+      }
     });
-
-    const createdUser = await User.findById(user._id).select("-password");
-
-    return res.status(200).json(new ApiResponse(200, createdUser));
   } catch (error) {
     res.status(500).json({
       error: error.message,

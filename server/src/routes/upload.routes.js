@@ -1,9 +1,15 @@
 import Router from "express";
-import { uploadFile } from "../controllers/document.controllers.js";
+import {
+  deleteDocument,
+  uploadDocument,
+} from "../controllers/document.controllers.js";
 import { upload } from "../utils/FileStorage.js";
+import { userAuth } from "../middleware/userAuth.js";
 
 const router = Router();
 
-router.route("/upload").post(upload.single("pdfName"), uploadFile);
+// upload.single("pdfName")
+router.route("/upload").post(uploadDocument);
+router.route("/delete").post(deleteDocument);
 
 export default router;

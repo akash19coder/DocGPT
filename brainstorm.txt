@@ -1,2 +1,61 @@
 // Implement Auth Feature
    - fixed app start even with DB connection error with process.exit(1);
+
+// Data extraction
+- I researched about MegaParse, DocLing and LlamaParse turns out they only have Python SDK
+- I am going to rely on Langchain Doc Loader now.
+// challenges 
+- can't store pdfs locally because i won't get free storage in free hosting. it will crash my app
+- if i store locally, how will I read latest document uploaded by user. also multiple users can lead to crash.
+
+// alternative 
+- store in Vercel Blob
+- read document using blob 
+
+Solution 1
+--> user_1
+    - pdfname.pdf
+--> user 2
+    - pdfname.pdf
+
+?? will i get free storage in Render? - Yes, 16GB
+?? how will i create directory with 'user_1' name? - using multur
+
+Pros -> no extra network call, everything locally
+Cons -> everything local
+
+Solution 2
+--> upload to Vercel Blob
+--> read URL and extract pdf Data
+
+?? will langchain loader be able to read Blob URL?
+?? do i need to store pdf locally before uploading to Vercel Blob?
+
+
+I have ran into a problem EchoAPI is not able to upload the file so I have used Postman.
+Set up all the collections and requests in postman
+Now I am running into a problem where my server is not able to read the cookies.  
+
+the directory is created when you i restart the server. why
+
+--> problems = postman cookie problems, fs file creation problem, 
+
+---------------------------------------------------------------------------------------------------
+
+- test gemini api keys validity - done
+- split documents - done
+     --> learn more about dimensions in embeddings. ex.768
+ 
+- embed them - done
+     --> pinecone compatible formatting
+
+- store it in pinecone - done
+- CRUD in pinecone - done
+
+// Create models - documen.model, chat.model, payment.model, etc
+
+--------------------------------------------------------------------------------------------------------
+- error in deleting records
+- implement update, query
+
+- f 
