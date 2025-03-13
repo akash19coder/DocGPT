@@ -10,7 +10,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Copy, ThumbsUp, ThumbsDown } from "lucide-react";
-import { LogoAvatarComponent } from "./logo-avatar";
+import { LogoAvatarComponent } from "./LogoAvatarComponent";
 
 const messages = [
   {

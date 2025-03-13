@@ -52,10 +52,15 @@ the directory is created when you i restart the server. why
 - store it in pinecone - done
 - CRUD in pinecone - done
 
-// Create models - documen.model, chat.model, payment.model, etc
+// Create models - document.model, chat.model, payment.model, etc
 
 --------------------------------------------------------------------------------------------------------
 - error in deleting records
 - implement update, query
 
-- f 
+- prompt not matching challenge.
+  matches: [], empty altogether.
+
+POST /api/v1/chat/normalreply
+POST /api/v1/chat/summarize
+POST /api/v1/chat/definition-search 

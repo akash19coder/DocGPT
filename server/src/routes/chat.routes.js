@@ -1,9 +1,17 @@
 import Router from "express";
-import { getEmbedDocument } from "../utils/embedDocument.js";
-import { normalQuery } from "../controllers/chat.controllers.js";
+import {
+  normalQuery,
+  sumarizeQuery,
+  definitionSearchQuery,
+} from "../controllers/chat.controllers.js";
+import { userAuth } from "../middleware/userAuth.js";
 
 const router = Router();
 
-router.route("/chat").post(normalQuery);
+router.route("/chat/normal-reply/:documentId").post(userAuth, normalQuery);
+router.route("/chat/summarize/:documentId").post(userAuth, sumarizeQuery);
+router
+  .route("/chat/definition-search/:documentID")
+  .post(userAuth, definitionSearchQuery);
 
 export default router;

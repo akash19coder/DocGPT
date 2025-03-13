@@ -1,13 +1,14 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { MainLayoutComponent } from "./components/main-layout";
-import LandingPage from "./components/landing-page";
+import { Chat } from "./components/Chat";
+import LandingPage from "./components/LandingPage";
 
 function App() {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<LandingPage />} />
-        <Route path="/chat" element={<MainLayoutComponent />} />
+        {/* make it <Chat/> from <MainLayoutComponent /> */}
+        <Route path="/chat" element={<Chat />} />
         {/* <Route path="/chat/:id" element={<ChatPage />} /> */}
       </Routes>
     </Router>

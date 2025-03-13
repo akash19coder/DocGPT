@@ -8,7 +8,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { UserProfileModal } from "../hooks/user-profile-modal";
-import { ChatHistory } from "./chat-history";
+import { ChatHistory } from "./ChatHistory";
 
 export function SidebarComponent() {
   const [isExpanded, setIsExpanded] = useState(true);

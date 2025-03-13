@@ -8,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LogoAvatarComponent } from "./logo-avatar";
+import { LogoAvatarComponent } from "./LogoAvatarComponent";
 
 export function NavbarComponent() {
   return (

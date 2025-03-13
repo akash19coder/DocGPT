@@ -3,7 +3,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 const model = genAI.getGenerativeModel({ model: "text-embedding-004" });
 
-export const getEmbedDocument = async (textChunks) => {
+export const getEmbedDocument = async (textChunks, id) => {
   try {
     // Extract just the pageContent from each chunk
     const texts = textChunks.map((chunk) => chunk.pageContent);
@@ -15,10 +15,9 @@ export const getEmbedDocument = async (textChunks) => {
 
     // Transform the embedded chunks into the Pinecone format
     const formattedChunks = embeddingResults.map((result, index) => ({
-      id: `pdf-123-chunk_${index}`, // Using more standard ID format
+      id: `${id}:chunk_${index}`, // Using more standard ID format
       values: result.embedding.values, // Access the actual embedding array
       metadata: {
-        id: `id-${"akashsah.pdf"}`,
         text: texts[index], // Include original text as metadata
       },
     }));
@@ -31,7 +30,9 @@ export const getEmbedDocument = async (textChunks) => {
 
 export const getEmbedPrompt = async (prompt) => {
   try {
-    const embeddingResult = await model.embedContent("What is my BMI index");
+    const embeddingResult = await model.embedContent(
+      "Nutritional Strategy for Muscle Definition",
+    );
     console.log(embeddingResult);
     return embeddingResult.embedding.values;
   } catch (error) {

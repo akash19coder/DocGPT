@@ -12,7 +12,7 @@ const userSchema = new mongoose.Schema(
       required: true,
       unique: true,
       minLength: 3,
-      maxLength: 14,
+      maxLength: 100,
       validate: (v) => {
         // Check if username contains only allowed characters
         if (!/^[a-z0-9_]+$/.test(v)) {

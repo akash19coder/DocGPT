@@ -27,7 +27,7 @@ const DocumentSchema = new mongoose.Schema(
     },
     cloudinary_id: {
       type: String,
-      required: [true, "Cloudinary ID is required"],
+      // required: [true, "Cloudinary ID is required"],
       validate: {
         validator: function (value) {
           // Basic validation for cloudinary public ID format

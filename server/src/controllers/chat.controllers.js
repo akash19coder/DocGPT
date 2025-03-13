@@ -25,13 +25,27 @@ export const normalQuery = async (req, res) => {
   const context = queryResponse.matches
     .map((match) => match.metadata.text)
     .join("\n");
-  const chat = await model.startChat();
+
+  const chat = model.startChat();
   const result = await chat.sendMessage(
     `Context: ${context}\n\nQuestion: ${prompt}`,
   );
-  const response = await result.response;
+
+  const response = result.response;
 
   return res.status(200).json({
     answer: response.text(),
   });
 };
+
+//Implement definition search and summarize endpoint later on after implementing the frontend part.
+export const sumarizeQuery = async (req, res) => {
+  const { id } = req.params;
+
+  if (!id) {
+    throw new Error("Invalid Document ID");
+  }
+  //
+};
+
+export const definitionSearchQuery = async (req, res) => {};

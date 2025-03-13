@@ -56,7 +56,7 @@ export function TinyGradientFooter() {
         {gradientButtons.map((button) => (
           <button
             key={button.key}
-            className={`px-2 py-0.5 rounded-full text-gray-800 text-xs font-medium 
+            className={`px-2  rounded-full text-gray-800 text-xs font-medium 
                         bg-gradient-to-r from-pink-200 to-red-200
                         transition-all duration-300 ease-in-out
                         flex items-center space-x-1 border border-pink-300
@@ -73,7 +73,7 @@ export function TinyGradientFooter() {
           </button>
         ))}
       </div>
-      <div className="flex items-center space-x-2 p-4 bg-muted rounded-lg">
+      <div className="flex items-center space-x-2 bg-muted rounded-lg">
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button variant="outline" size="icon" className="shrink-0">

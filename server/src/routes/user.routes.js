@@ -13,9 +13,11 @@ const router = Router();
 
 router.route("/signup").post(signupUser);
 router.route("/signin").post(signinUser);
-router.route("/request-password-reset").post(requestPasswordReset);
-router.use("/reset-password", userAuth, resetPassword);
-router.use("/signout", userAuth, signOut);
-router.use("/profile", userAuth, getUserProfile);
+
+//Protected Routes
+router.route("/request-password-reset").post(userAuth, requestPasswordReset);
+router.route("/reset-password").post(userAuth, resetPassword);
+router.route("/signout").post(userAuth, signOut);
+router.route("/profile").get(userAuth, getUserProfile);
 
 export default router;

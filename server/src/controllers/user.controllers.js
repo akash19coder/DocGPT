@@ -5,7 +5,6 @@ import crypto from "crypto";
 import { OTP } from "../models/otp.model.js";
 import { sendVerificationCode } from "../utils/nodemailer.js";
 import { mkdir } from "fs";
-import { join } from "path";
 
 export const generateAccessAndRefreshToken = async (userId) => {
   const user = await User.findById(userId);
