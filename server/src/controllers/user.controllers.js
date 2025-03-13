@@ -20,7 +20,6 @@ export const generateAccessAndRefreshToken = async (userId) => {
 export const signupUser = async (req, res) => {
   try {
     const { username, name, email, password } = req.body;
-    console.log(username, name, email, password);
 
     // Finding empty field
     if (
@@ -79,7 +78,7 @@ export const signinUser = async (req, res) => {
     const user = await User.findOne({
       $or: [{ email }, { password }],
     });
-    console.log(user);
+
     if (!user) {
       throw new Error("User not registered");
     }
@@ -126,7 +125,6 @@ export const signinUser = async (req, res) => {
 
 export const requestPasswordReset = async (req, res) => {
   try {
-    console.log("i have entered reset controller");
     const { email } = req.body;
 
     // Validate email
@@ -140,7 +138,6 @@ export const requestPasswordReset = async (req, res) => {
       throw new Error("User not found");
     }
 
-    console.log("i have found user");
     // Generate OTP
     const otp = crypto.randomInt(100000, 999999).toString();
 
@@ -164,6 +161,7 @@ export const requestPasswordReset = async (req, res) => {
       });
     }
 
+    //TODO: Convert it into Promise.
     await sendVerificationCode(user.email, otp);
 
     res.status(200).json(new ApiResponse(200, "OTP sent to email"));
@@ -217,10 +215,11 @@ export const resetPassword = async (req, res) => {
   }
 };
 
+//TODO: it is not the right way to signout. Implement better method
 export const signOut = async (req, res) => {
   try {
     await User.findByIdAndUpdate(
-      req.use._id,
+      req.user._id,
       {
         $unset: {
           refreshToken: 1,
@@ -230,7 +229,7 @@ export const signOut = async (req, res) => {
         new: true,
       },
     );
-    options = {
+    const options = {
       httpOnly: true,
       secure: true,
     };
@@ -262,6 +261,7 @@ export const getUserProfile = async (req, res) => {
 
 export const updateImageUrl = async (req, res) => {
   try {
+    //TODO: get the image file, uplaod into Cloudinary, update imageUrl with cloudinary ID;
     const { imageUrl } = req.body;
     const user = req.user;
 
