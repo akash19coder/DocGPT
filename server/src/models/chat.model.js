@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { Document } from "./document.model.js";
 
 const ConversationSchema = new mongoose.Schema(
   {
@@ -17,11 +18,9 @@ const ChatHistorySchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
-  chatId: {
-    type: String,
-  },
-  title: {
-    type: String,
+  documentId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: Document,
   },
   conversation: [ConversationSchema],
 });

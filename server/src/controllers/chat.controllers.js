@@ -1,3 +1,4 @@
+import { Chat } from "../models/chat.model.js";
 import { getEmbedPrompt } from "../utils/embedDocument.js";
 import { queryVectorFromPinecone } from "../utils/pinecone.js";
 
@@ -7,11 +8,15 @@ const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
 
 // It will serve normal user query via user prompt
 export const normalQuery = async (req, res) => {
-  const { id } = req.params;
+  const { documentId } = req.params;
   const { prompt } = req.body;
   const { username } = req.user;
 
   try {
+    const chathistory = await Chat.findOne({ documentId });
+    console.log(chathistory);
+    await chathistory.addConversation("user", prompt);
+
     const embedPrompt = await getEmbedPrompt(prompt);
     if (!embedPrompt) {
       throw new Error("Error in embeding prompt");
@@ -34,6 +39,8 @@ export const normalQuery = async (req, res) => {
     );
 
     const response = result.response;
+
+    await chathistory.addConversation("model", response.text());
 
     return res.status(200).json({
       answer: response.text(),

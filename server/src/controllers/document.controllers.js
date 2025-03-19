@@ -1,3 +1,4 @@
+import { Chat } from "../models/chat.model.js";
 import { Document } from "../models/document.model.js";
 import { getEmbedDocument } from "../utils/embedDocument.js";
 import { getLoadedDocument } from "../utils/loadDocument.js";
@@ -53,6 +54,17 @@ export const uploadDocument = async (req, res) => {
   if (!newDocument) {
     throw new Error("Failed to create document record");
   }
+
+  const newChat = await Chat.create({
+    userId: req.user._id,
+    documentId: newDocument._id,
+    conversation: [],
+  });
+
+  if (!newChat) {
+    throw new Error("Failed to create new chat");
+  }
+
   res.status(200).json(newDocument);
 };
 
