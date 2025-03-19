@@ -30,9 +30,8 @@ export const getEmbedDocument = async (textChunks, id) => {
 
 export const getEmbedPrompt = async (prompt) => {
   try {
-    const embeddingResult = await model.embedContent(
-      "Nutritional Strategy for Muscle Definition",
-    );
+    console.log(prompt);
+    const embeddingResult = await model.embedContent(prompt);
     console.log(embeddingResult);
     return embeddingResult.embedding.values;
   } catch (error) {

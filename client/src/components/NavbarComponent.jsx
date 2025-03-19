@@ -1,6 +1,7 @@
 import { ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import {
   DropdownMenu,
@@ -11,6 +12,11 @@ import {
 import { LogoAvatarComponent } from "./LogoAvatarComponent";
 
 export function NavbarComponent() {
+  const navigate = useNavigate();
+
+  const handleSignIn = () => {
+    navigate("/login");
+  };
   return (
     <header className="flex h-20 w-full items-center justify-between bg-gray-900 px-6">
       <div className="flex items-center space-x-4">
@@ -43,7 +49,10 @@ export function NavbarComponent() {
           Contact Us
         </Link>
       </nav>
-      <Button className="bg-blue-500 text-white hover:bg-blue-600">
+      <Button
+        onClick={handleSignIn}
+        className="bg-blue-500 text-white hover:bg-blue-600"
+      >
         Sign In
       </Button>
     </header>

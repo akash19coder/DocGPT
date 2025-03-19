@@ -1,122 +1,90 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "../components/ui/card";
-import { AlertCircle, ArrowLeft, CheckCircle2 } from "lucide-react";
-import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert";
+import React, { useState, useRef } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import AuthLayout from "../components/ui/AuthLayout";
+import AuthHeader from "../components/ui/AuthHeader";
+import InputField from "../components/ui/InputField";
+import AuthButton from "../components/ui/AuthButton";
 
-export default function ForgotPasswordPage() {
-  const [email, setEmail] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = (useState < string) | (null > null);
-  const [success, setSuccess] = useState(false);
+export default function ForgotPassword() {
+  const [loading, setLoading] = useState(false);
+  const email = useRef();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
-    setError(null);
 
-    try {
-      // Replace with your actual API endpoint
-      const response = await fetch(
-        "https://api.example.com/auth/forgot-password",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email }),
-        }
-      );
+    setLoading(true);
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to send reset email");
+    const response = await fetch(
+      "http://localhost:3002/api/v1/user/request-password-reset",
+      {
+        method: "POST",
+        body: JSON.stringify({ email: email.current.value }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
       }
+    );
 
-      setSuccess(true);
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "An unexpected error occurred. Please try again."
-      );
-      console.error(err);
-    } finally {
-      setIsLoading(false);
-    }
+    const reply = await response.json();
+
+    console.log(reply);
+
+    setTimeout(() => {
+      setLoading(false);
+      navigate("/reset-password");
+    }, 1000);
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-4 py-12 bg-gray-50 dark:bg-gray-900">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle className="text-2xl">Forgot Password</CardTitle>
-          <CardDescription>
-            Enter your email address and we'll send you a link to reset your
-            password.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {success ? (
-            <Alert className="bg-green-50 border-green-200">
-              <CheckCircle2 className="h-4 w-4 text-green-600" />
-              <AlertTitle className="text-green-800">
-                Check your email
-              </AlertTitle>
-              <AlertDescription className="text-green-700">
-                We've sent a password reset link to {email}. Please check your
-                inbox and spam folder.
-              </AlertDescription>
-            </Alert>
-          ) : (
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="Email address"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  disabled={isLoading}
-                  className="w-full"
-                />
-              </div>
+    <AuthLayout
+      imageSide="left"
+      image="https://images.unsplash.com/photo-1620121692029-d088224ddc74?q=80&w=1974&auto=format&fit=crop"
+    >
+      <AuthHeader
+        title="Reset your password"
+        description="Enter your email address to receive a password reset code"
+      />
 
-              {error && (
-                <Alert variant="destructive">
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertTitle>Error</AlertTitle>
-                  <AlertDescription>{error}</AlertDescription>
-                </Alert>
-              )}
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <label className=" text-sm font-medium text-foreground">Email</label>
+        <div>
+          <input
+            type="email"
+            placeholder="ben@gmail.com"
+            ref={email}
+            className=" w-full rounded-md border border-input bg-background px-4 py-3 text-foreground shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+          />
+        </div>
 
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Sending..." : "Send Reset Link"}
-              </Button>
-            </form>
-          )}
-        </CardContent>
-        <CardFooter className="flex justify-center">
+        <AuthButton
+          type="submit"
+          loading={loading}
+          className="w-full"
+          delay={2}
+        >
+          Send Reset Code
+        </AuthButton>
+      </form>
+
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.4 }}
+        className="mt-6 text-center"
+      >
+        <p className="text-sm text-muted-foreground">
+          Remember your password?{" "}
           <Link
-            to="/auth/signin"
-            className="flex items-center text-sm text-muted-foreground hover:text-primary"
+            to="/login"
+            className="font-medium text-primary hover:text-primary/90 transition-colors"
           >
-            <ArrowLeft className="mr-2 h-4 w-4" />
             Back to sign in
           </Link>
-        </CardFooter>
-      </Card>
-    </div>
+        </p>
+      </motion.div>
+    </AuthLayout>
   );
 }

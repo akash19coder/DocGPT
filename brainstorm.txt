@@ -64,3 +64,16 @@ the directory is created when you i restart the server. why
 POST /api/v1/chat/normalreply
 POST /api/v1/chat/summarize
 POST /api/v1/chat/definition-search 
+
+
+-------------------------------------------------------------------------------------------
+-> CORS error and Cookie not reachable to the server (write about it)
+-> i can use proxy. go ahead and study about it.
+-> 
+
+------------------------------------------------------------------------------------------
+Challenge #1 today --> Cookie Not being set in Frontend
+
+------------------------------------------------------------------------------------------
+> test update and delete apis
+> implement chat APIS and make it consistent across all edge cases

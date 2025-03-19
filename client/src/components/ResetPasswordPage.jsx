@@ -1,246 +1,133 @@
-import { useState, useEffect } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "../components/ui/card";
-import {
-  AlertCircle,
-  ArrowLeft,
-  CheckCircle2,
-  Eye,
-  EyeOff,
-} from "lucide-react";
-import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert";
+import React, { useState, useRef } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import AuthLayout from "../components/ui/AuthLayout";
+import AuthHeader from "../components/ui/AuthHeader";
+import InputField from "../components/ui/InputField";
+import AuthButton from "../components/ui/AuthButton";
 
-export default function ResetPasswordPage() {
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = (useState < string) | (null > null);
-  const [success, setSuccess] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isValidToken, setIsValidToken] = useState(false);
-  const [token, setToken] = useState("");
+export default function ResetPassword() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const otp = useRef();
+  const password = useRef();
+  const confirmPassword = useRef();
 
   const navigate = useNavigate();
-  const location = useLocation();
-
-  useEffect(() => {
-    // Extract token from URL query parameters
-    const queryParams = new URLSearchParams(location.search);
-    const resetToken = queryParams.get("token");
-
-    if (resetToken) {
-      setToken(resetToken);
-      validateToken(resetToken);
-    } else {
-      setError(
-        "No reset token found. Please request a new password reset link."
-      );
-    }
-  }, [location]);
-
-  const validateToken = async (resetToken: string) => {
-    try {
-      // Replace with your actual API endpoint
-      const response = await fetch(
-        `https://api.example.com/auth/validate-token?token=${resetToken}`
-      );
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Invalid or expired token");
-      }
-
-      setIsValidToken(true);
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Invalid or expired token. Please request a new one."
-      );
-      console.error(err);
-    }
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (password !== confirmPassword) {
-      setError("Passwords do not match");
-      return;
+    if (password.current.value !== confirmPassword.current.value) {
+      return setError("Password did not match");
     }
+    setLoading(true);
 
-    if (password.length < 8) {
-      setError("Password must be at least 8 characters long");
-      return;
-    }
+    const data = {
+      otp: otp.current.value,
+      password: password.current.value,
+    };
 
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      // Replace with your actual API endpoint
-      const response = await fetch(
-        "https://api.example.com/auth/reset-password",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ token, password }),
-        }
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to reset password");
+    // Simulate API call
+    const response = await fetch(
+      "http://localhost:3002/api/v1/user/reset-password",
+      {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
       }
+    );
 
-      setSuccess(true);
-      // Redirect to sign in page after 3 seconds
-      setTimeout(() => {
-        navigate("/auth/signin");
-      }, 3000);
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "An unexpected error occurred. Please try again."
-      );
-      console.error(err);
-    } finally {
-      setIsLoading(false);
-    }
+    const reply = await response.json();
+
+    console.log(reply);
+
+    setTimeout(() => {
+      setLoading(false);
+      navigate("/login");
+    }, 1500);
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-4 py-12 bg-gray-50 dark:bg-gray-900">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle className="text-2xl">Reset Password</CardTitle>
-          <CardDescription>
-            Create a new password for your account
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {success ? (
-            <Alert className="bg-green-50 border-green-200">
-              <CheckCircle2 className="h-4 w-4 text-green-600" />
-              <AlertTitle className="text-green-800">
-                Password updated
-              </AlertTitle>
-              <AlertDescription className="text-green-700">
-                Your password has been successfully reset. You'll be redirected
-                to the sign in page shortly.
-              </AlertDescription>
-            </Alert>
-          ) : (
-            <>
-              {error && (
-                <Alert variant="destructive" className="mb-4">
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertTitle>Error</AlertTitle>
-                  <AlertDescription>{error}</AlertDescription>
-                </Alert>
-              )}
+    <AuthLayout
+      imageSide="right"
+      image="https://images.unsplash.com/photo-1633265486064-086b219458ec?q=80&w=1770&auto=format&fit=crop"
+    >
+      <AuthHeader
+        title="Create new password"
+        description="Enter the code sent to your email and set a new password"
+      />
 
-              {isValidToken ? (
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="space-y-2">
-                    <div className="relative">
-                      <Input
-                        id="password"
-                        type={showPassword ? "text" : "password"}
-                        placeholder="New password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                        disabled={isLoading}
-                        className="w-full pr-10"
-                      />
-                      <button
-                        type="button"
-                        className="absolute inset-y-0 right-0 flex items-center pr-3"
-                        onClick={() => setShowPassword(!showPassword)}
-                      >
-                        {showPassword ? (
-                          <EyeOff className="h-4 w-4 text-muted-foreground" />
-                        ) : (
-                          <Eye className="h-4 w-4 text-muted-foreground" />
-                        )}
-                      </button>
-                    </div>
-                  </div>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <label className="block text-sm font-medium text-foreground">
+          Enter OTP
+        </label>
+        <div>
+          <input
+            type="text"
+            placeholder="123456"
+            ref={otp}
+            className="block w-full rounded-md border border-input bg-background px-4 py-3 text-foreground shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+          />
+        </div>
 
-                  <div className="space-y-2">
-                    <div className="relative">
-                      <Input
-                        id="confirmPassword"
-                        type={showConfirmPassword ? "text" : "password"}
-                        placeholder="Confirm new password"
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        required
-                        disabled={isLoading}
-                        className="w-full pr-10"
-                      />
-                      <button
-                        type="button"
-                        className="absolute inset-y-0 right-0 flex items-center pr-3"
-                        onClick={() =>
-                          setShowConfirmPassword(!showConfirmPassword)
-                        }
-                      >
-                        {showConfirmPassword ? (
-                          <EyeOff className="h-4 w-4 text-muted-foreground" />
-                        ) : (
-                          <Eye className="h-4 w-4 text-muted-foreground" />
-                        )}
-                      </button>
-                    </div>
-                  </div>
+        <label className="block text-sm font-medium text-foreground">
+          New Password
+        </label>
+        <div>
+          <input
+            type="password"
+            placeholder="askjaskdj"
+            ref={password}
+            className="block w-full rounded-md border border-input bg-background px-4 py-3 text-foreground shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+          />
+        </div>
 
-                  <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? "Updating..." : "Reset Password"}
-                  </Button>
-                </form>
-              ) : (
-                <div className="text-center py-4">
-                  <p className="text-muted-foreground">
-                    Invalid or expired reset link. Please request a new one.
-                  </p>
-                  <Button
-                    variant="outline"
-                    className="mt-4"
-                    onClick={() => navigate("/auth/forgot-password")}
-                  >
-                    Request New Link
-                  </Button>
-                </div>
-              )}
-            </>
-          )}
-        </CardContent>
-        <CardFooter className="flex justify-center">
+        <label className="block text-sm font-medium text-foreground">
+          Confirm Password
+        </label>
+        <div>
+          <input
+            type="password"
+            placeholder="asdlkjfa"
+            ref={confirmPassword}
+            className="block w-full rounded-md border border-input bg-background px-4 py-3 text-foreground shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+          />
+        </div>
+        {error && (
+          <span className="pt-4 text-red-500 text-sm italic">{error}</span>
+        )}
+
+        <AuthButton
+          type="submit"
+          loading={loading}
+          className="w-full"
+          delay={4}
+        >
+          Reset Password
+        </AuthButton>
+      </form>
+
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.6 }}
+        className="mt-6 text-center"
+      >
+        <p className="text-sm text-muted-foreground">
+          Remember your password?{" "}
           <Link
-            to="/auth/signin"
-            className="flex items-center text-sm text-muted-foreground hover:text-primary"
+            to="/login"
+            className="font-medium text-primary hover:text-primary/90 transition-colors"
           >
-            <ArrowLeft className="mr-2 h-4 w-4" />
             Back to sign in
           </Link>
-        </CardFooter>
-      </Card>
-    </div>
+        </p>
+      </motion.div>
+    </AuthLayout>
   );
 }

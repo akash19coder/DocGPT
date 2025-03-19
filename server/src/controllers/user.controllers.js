@@ -117,6 +117,7 @@ export const signinUser = async (req, res) => {
         ),
       );
   } catch (error) {
+    console.log(error.message);
     res.status(500).json({
       error: error.message,
     });
@@ -231,7 +232,7 @@ export const signOut = async (req, res) => {
     );
     const options = {
       httpOnly: true,
-      secure: true,
+      secure: false,
     };
     res
       .status(200)
@@ -255,7 +256,7 @@ export const getUserProfile = async (req, res) => {
     }
     res.status(200).json(loggedUser);
   } catch (error) {
-    res.status(500).json({ erroe: error.message });
+    res.status(500).json({ error: error.message });
   }
 };
 

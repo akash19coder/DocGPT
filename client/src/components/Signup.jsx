@@ -1,190 +1,142 @@
-import { useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
+import React, { useState, useRef } from "react";
+import { useDispatch } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "../components/ui/card";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "../components/ui/form";
+import toast, { Toaster } from "react-hot-toast";
 
-export default function SignupForm() {
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+import AuthLayout from "../components/ui/AuthLayout";
+import AuthHeader from "../components/ui/AuthHeader";
+import AuthButton from "../components/ui/AuthButton";
 
-  function onSubmit(values) {}
+import { addUser } from "../utils/userSlice";
+
+export default function SignUp() {
+  const fullName = useRef();
+  const username = useRef();
+  const email = useRef();
+  const password = useRef();
+
+  const dispatch = useDispatch();
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    toast.loading("Submitting...");
+    setLoading(true);
+
+    const data = {
+      name: fullName.current.value,
+      username: username.current.value,
+      email: email.current.value,
+      password: password.current.value,
+    };
+
+    const response = await fetch("http://localhost:3002/api/v1/user/signup", {
+      method: "POST",
+      body: JSON.stringify(data),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    toast.dismiss();
+
+    const user = await response.json();
+    if (user.error) {
+      toast.error(user.error);
+      setError(user.error);
+    } else {
+      toast.success("User created");
+      dispatch(addUser(user.data));
+    }
+
+    setTimeout(() => {
+      navigate("/login");
+      setLoading(false);
+    }, 1500);
+
+    // Simulate API call
+  };
 
   return (
-    <div className="flex justify-center items-center min-h-screen p-4 bg-gray-50">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">
-            Create an account
-          </CardTitle>
-          <CardDescription className="text-center">
-            Enter your information to create an account
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Form>
-            <form className="space-y-4">
-              <FormField
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Full Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="John Doe" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+    <AuthLayout imageSide="left">
+      <Toaster />
+      <AuthHeader
+        title="Create an account"
+        description="Enter your details to get started"
+      />
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <label className=" text-sm font-medium text-foreground">
+          Full Name
+        </label>
+        <div>
+          <input
+            type="text"
+            placeholder="Ben Ten"
+            ref={fullName}
+            className="block w-full rounded-md border border-input bg-background px-4 py-3 text-foreground shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+          />
+        </div>
 
-              <FormField
-                name="username"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Username</FormLabel>
-                    <FormControl>
-                      <Input placeholder="johndoe" {...field} />
-                    </FormControl>
-                    <FormDescription>
-                      This will be your unique identifier
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+        <label className=" text-sm font-medium text-foreground">Username</label>
+        <div>
+          <input
+            type="text"
+            placeholder="ben_ten"
+            ref={username}
+            className="block w-full rounded-md border border-input bg-background px-4 py-3 text-foreground shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+          />
+        </div>
 
-              <FormField
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input type="email" placeholder="john.doe@example.com" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+        <label className=" text-sm font-medium text-foreground">Email</label>
+        <div>
+          <input
+            type="email"
+            placeholder="ben@gmail.com"
+            ref={email}
+            className="block w-full rounded-md border border-input bg-background px-4 py-3 text-foreground shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+          />
+        </div>
 
-              <FormField
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <Input
-                          type={showPassword ? "text" : "password"}
-                          placeholder="••••••••"
-                          {...field}
-                        />
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          className="absolute right-0 top-0 h-full px-3"
-                          onClick={() => setShowPassword(!showPassword)}
-                        >
-                          {showPassword ? (
-                            <EyeOff className="h-4 w-4" />
-                          ) : (
-                            <Eye className="h-4 w-4" />
-                          )}
-                          <span className="sr-only">
-                            {showPassword ? "Hide password" : "Show password"}
-                          </span>
-                        </Button>
-                      </div>
-                    </FormControl>
-                    <FormDescription>
-                      Must be at least 8 characters with mixed case and numbers
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+        <label className=" text-sm font-medium text-foreground">Password</label>
+        <div>
+          <input
+            type="password"
+            placeholder="......."
+            ref={password}
+            className=" w-full rounded-md border border-input bg-background px-4 py-3 text-foreground shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+          />
+        </div>
+        {error && (
+          <span className="text-sm text-red-700 pt-4 italic">{error}</span>
+        )}
+        <AuthButton type="submit" className="w-full" delay={5}>
+          Create Account
+        </AuthButton>
+      </form>
 
-              <FormField
-                name="confirmPassword"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Confirm Password</FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <Input
-                          type={showConfirmPassword ? "text" : "password"}
-                          placeholder="••••••••"
-                          {...field}
-                        />
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          className="absolute right-0 top-0 h-full px-3"
-                          onClick={() =>
-                            setShowConfirmPassword(!showConfirmPassword)
-                          }
-                        >
-                          {showConfirmPassword ? (
-                            <EyeOff className="h-4 w-4" />
-                          ) : (
-                            <Eye className="h-4 w-4" />
-                          )}
-                          <span className="sr-only">
-                            {showConfirmPassword
-                              ? "Hide password"
-                              : "Show password"}
-                          </span>
-                        </Button>
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <Button type="submit" className="w-full">
-                Sign Up
-              </Button>
-            </form>
-          </Form>
-        </CardContent>
-        <CardFooter className="flex flex-col space-y-4">
-          <div className="text-sm text-center text-muted-foreground">
-            By creating an account, you agree to our{" "}
-            <a href="#" className="underline">
-              Terms of Service
-            </a>{" "}
-            and{" "}
-            <a href="#" className="underline">
-              Privacy Policy
-            </a>
-          </div>
-          <div className="text-sm text-center">
-            Already have an account?{" "}
-            <a href="#" className="text-primary underline">
-              Log in
-            </a>
-          </div>
-        </CardFooter>
-      </Card>
-    </div>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.6 }}
+        className="mt-6 text-center"
+      >
+        <p className="text-sm text-muted-foreground">
+          Already have an account?{" "}
+          <Link
+            to="/login"
+            className="font-medium text-primary hover:text-primary/90 transition-colors"
+          >
+            Sign in
+          </Link>
+        </p>
+      </motion.div>
+    </AuthLayout>
   );
 }

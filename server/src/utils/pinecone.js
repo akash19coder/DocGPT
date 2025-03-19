@@ -20,9 +20,9 @@ export const upsertVectorToPinecone = async (embeddings, namespace) => {
 };
 
 //Queries new records related to chunks of document
-export const queryVectorFromPinecone = async (queryEmbeddings) => {
+export const queryVectorFromPinecone = async (namespace, queryEmbeddings) => {
   try {
-    const queryResponse = await index.namespace("userId_1234").query({
+    const queryResponse = await index.namespace(namespace).query({
       vector: queryEmbeddings,
       topK: 5,
       includeMetadata: true,
