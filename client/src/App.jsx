@@ -18,12 +18,14 @@ function App() {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route element={<ProtectedRoute />}>
+            {/* TODO: it is not the right way of doing it...*/}
             <Route path="/chat" element={<Chat />} />
+            <Route path="/chat/:id" element={<Chat />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
           </Route>
           <Route path="/login" element={<LoginForm />} />
           <Route path="/signup" element={<SignupForm />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
         </Routes>
       </Router>
     </Provider>

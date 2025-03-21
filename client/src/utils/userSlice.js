@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+//TODO: rename it to authSlice and convert reducers into login and logout
 const userSlice = createSlice({
   name: "user",
   initialState: {

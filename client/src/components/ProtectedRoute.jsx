@@ -6,7 +6,8 @@ const ProtectedRoute = () => {
   //write authenticated logic here...it is going to come from Redux Store...
   console.log(document.cookie);
 
-  const isAuthenticated = useSelector((store) => store.user.isAuthenticated);
+  const isAuthenticated = true;
+  // const isAuthenticated = useSelector((store) => store.user.isAuthenticated);
   console.log(isAuthenticated);
   return isAuthenticated ? <Outlet /> : <Navigate to="/login" />;
 };

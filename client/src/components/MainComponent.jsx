@@ -9,8 +9,9 @@ export function MainComponent() {
   return (
     <div className="flex flex-col flex-grow">
       <Header />
+
+      {/* when messages changes */}
       <ChatInterface />
-      <TinyGradientFooter />
     </div>
   );
 }

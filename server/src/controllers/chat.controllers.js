@@ -6,6 +6,25 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
 
+export const getChatHistory = async (req, res) => {
+  const { documentId } = req.params;
+
+  try {
+    const chat = await Chat.findOne({ documentId });
+    if (!chat) {
+      throw new Error("Chat not found");
+    }
+    res.status(200).json({
+      data: chat.conversation,
+    });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({
+      error: error.message,
+    });
+  }
+};
+
 // It will serve normal user query via user prompt
 export const normalQuery = async (req, res) => {
   const { documentId } = req.params;

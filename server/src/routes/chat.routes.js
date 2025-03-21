@@ -3,11 +3,13 @@ import {
   normalQuery,
   sumarizeQuery,
   definitionSearchQuery,
+  getChatHistory,
 } from "../controllers/chat.controllers.js";
 import { userAuth } from "../middleware/userAuth.js";
 
 const router = Router();
 
+router.route("/chat/history/:documentId").get(userAuth, getChatHistory);
 router.route("/chat/normal-reply/:documentId").post(userAuth, normalQuery);
 router.route("/chat/summarize/:documentId").post(userAuth, sumarizeQuery);
 router
