@@ -25,18 +25,15 @@ const DocumentSchema = new mongoose.Schema(
         message: "File size must be between 0 and 10MB",
       },
     },
-    cloudinary_id: {
+    cloudinary_url: {
       type: String,
       // required: [true, "Cloudinary ID is required"],
       validate: {
         validator: function (value) {
           // Basic validation for cloudinary public ID format
-          return (
-            validator.isLength(value, { min: 1, max: 100 }) &&
-            validator.matches(value, /^[a-zA-Z0-9_\-\/]+$/)
-          );
+          return validator.isLength(value, { min: 1, max: 100 });
         },
-        message: "Invalid Cloudinary ID format",
+        message: "Invalid Cloudinary url format",
       },
     },
     userId: {

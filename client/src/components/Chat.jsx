@@ -9,7 +9,6 @@ import { LogoComponent } from "./LogoComponent";
 import { SidebarComponent } from "./SidebarComponent";
 import { ChatComponent } from "./ChatComponent";
 import { LogoWithDropdownComponent } from "./LogoWithDropdownComponent";
-import { SleekPdfViewer } from "./SleekPdfViewer";
 import { TinyGradientFooter } from "./TinyGradientFooter";
 import { MainComponent } from "./MainComponent";
 

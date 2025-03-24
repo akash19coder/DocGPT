@@ -1,5 +1,6 @@
 import { Chat } from "../models/chat.model.js";
 import { Document } from "../models/document.model.js";
+import { uploadFileOnCloudinary } from "../utils/cloudinary.js";
 import { getEmbedDocument } from "../utils/embedDocument.js";
 import { getLoadedDocument } from "../utils/loadDocument.js";
 import {
@@ -25,6 +26,8 @@ export const uploadDocument = async (req, res) => {
     throw new Error("file path invalid");
   }
 
+  const fileUploadResult = await uploadFileOnCloudinary(filePath);
+
   //TODO: convert each util into promises and do then()
   const loadedDocument = await getLoadedDocument(filePath);
   if (!loadedDocument) {
@@ -47,6 +50,7 @@ export const uploadDocument = async (req, res) => {
   const newDocument = await Document.create({
     name: originalname,
     size: req.file.size,
+    cloudinary_url: fileUploadResult.secure_url,
     // Using the generated filename as cloudinary_id
     userId: req.user._id,
   });

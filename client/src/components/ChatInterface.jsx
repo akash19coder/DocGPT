@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { TinyGradientFooter } from "./TinyGradientFooter";
 import { addMessage } from "../utils/chatSlice";
-import { SleekPdfViewer } from "./SleekPdfViewer";
+import PDFViewer from "./SleekPdfViewer";
 
 const ChatInterface = () => {
   const dispatch = useDispatch();
@@ -13,7 +13,7 @@ const ChatInterface = () => {
 
   const chat = useSelector((store) => store.chat.messages);
   console.log("i am chat", chat);
-  // const documentId = useSelector((store) => store.document?.messages);
+  const document = useSelector((store) => store.document?.messages);
   // console.log("i am documentid", documentId);
   const { id } = useParams();
   console.log("i am document id", id);
@@ -43,7 +43,7 @@ const ChatInterface = () => {
   return (
     <div className="flex flex-col flex-grow">
       <main className="flex flex-row justify-evenly h-[80vh] flex-grow p-6 overflow-auto">
-        <SleekPdfViewer />
+        <PDFViewer url={document.cloudinary_url} />
         <div className="relative z-0">
           {chat !== undefined && id !== undefined ? (
             <ChatComponent />

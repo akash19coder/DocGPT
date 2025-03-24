@@ -5,10 +5,13 @@ import AuthLayout from "../components/ui/AuthLayout";
 import AuthHeader from "../components/ui/AuthHeader";
 import InputField from "../components/ui/InputField";
 import AuthButton from "../components/ui/AuthButton";
+import toast, { Toaster } from "react-hot-toast";
+import useValidation from "../hooks/useFormDataValidator";
 
 export default function ResetPassword() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const { errors, validate } = useValidation();
 
   const otp = useRef();
   const password = useRef();
@@ -22,12 +25,19 @@ export default function ResetPassword() {
     if (password.current.value !== confirmPassword.current.value) {
       return setError("Password did not match");
     }
+    toast.loading("Reseting Password...");
     setLoading(true);
 
     const data = {
       otp: otp.current.value,
       password: password.current.value,
     };
+
+    if (!validate(errors)) {
+      toast.dismiss();
+      toast.error("Failed to Reset Password");
+      return;
+    }
 
     // Simulate API call
     const response = await fetch(
@@ -43,8 +53,14 @@ export default function ResetPassword() {
     );
 
     const reply = await response.json();
+    toast.dismiss();
 
-    console.log(reply);
+    if (reply.error) {
+      toast.error("Failed To Reset Password...");
+      setError(reply.error);
+    } else {
+      toast.success("Password Reset");
+    }
 
     setTimeout(() => {
       setLoading(false);
@@ -57,6 +73,7 @@ export default function ResetPassword() {
       imageSide="right"
       image="https://images.unsplash.com/photo-1633265486064-086b219458ec?q=80&w=1770&auto=format&fit=crop"
     >
+      <Toaster />
       <AuthHeader
         title="Create new password"
         description="Enter the code sent to your email and set a new password"
@@ -97,13 +114,16 @@ export default function ResetPassword() {
             ref={confirmPassword}
             className="block w-full rounded-md border border-input bg-background px-4 py-3 text-foreground shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
           />
+          {errors && (
+            <span className="pt-4 text-red-500 text-sm italic">
+              {errors.password}
+            </span>
+          )}
         </div>
-        {error && (
-          <span className="pt-4 text-red-500 text-sm italic">{error}</span>
-        )}
 
         <AuthButton
           type="submit"
+          onClick={handleSubmit}
           loading={loading}
           className="w-full"
           delay={4}

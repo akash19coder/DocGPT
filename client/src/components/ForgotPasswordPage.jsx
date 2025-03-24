@@ -5,15 +5,19 @@ import AuthLayout from "../components/ui/AuthLayout";
 import AuthHeader from "../components/ui/AuthHeader";
 import InputField from "../components/ui/InputField";
 import AuthButton from "../components/ui/AuthButton";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function ForgotPassword() {
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
+
   const email = useRef();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    toast.loading("Processing...");
     setLoading(true);
 
     const response = await fetch(
@@ -29,8 +33,14 @@ export default function ForgotPassword() {
     );
 
     const reply = await response.json();
+    toast.dismiss();
 
-    console.log(reply);
+    if (reply.error) {
+      toast.error("Operation Failed...");
+      setError(reply.error);
+    } else {
+      toast.success("Check Email for OTP");
+    }
 
     setTimeout(() => {
       setLoading(false);
@@ -43,6 +53,7 @@ export default function ForgotPassword() {
       imageSide="left"
       image="https://images.unsplash.com/photo-1620121692029-d088224ddc74?q=80&w=1974&auto=format&fit=crop"
     >
+      <Toaster />
       <AuthHeader
         title="Reset your password"
         description="Enter your email address to receive a password reset code"
@@ -55,9 +66,13 @@ export default function ForgotPassword() {
             type="email"
             placeholder="ben@gmail.com"
             ref={email}
-            className=" w-full rounded-md border border-input bg-background px-4 py-3 text-foreground shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+            className="w-full rounded-md border border-input bg-background px-4 py-3 text-foreground shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
           />
         </div>
+
+        {error && (
+          <span className="pt-4 text-red-500 text-sm italic">{error}</span>
+        )}
 
         <AuthButton
           type="submit"

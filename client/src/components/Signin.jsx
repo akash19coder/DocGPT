@@ -3,14 +3,16 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import AuthLayout from "../components/ui/AuthLayout";
 import AuthHeader from "../components/ui/AuthHeader";
-import InputField from "../components/ui/InputField";
 import AuthButton from "../components/ui/AuthButton";
 import { useDispatch } from "react-redux";
 import { setIsAuthenticated } from "../utils/userSlice";
 import toast, { Toaster } from "react-hot-toast";
+import useValidation from "../hooks/useFormDataValidator";
 
 export default function SignIn() {
   const [loading, setLoading] = useState(false);
+  const { errors, validate } = useValidation();
+
   const email = useRef();
   const password = useRef();
   const navigate = useNavigate();
@@ -22,11 +24,15 @@ export default function SignIn() {
     toast.loading("Logging in...");
     setLoading(true);
 
-    // Simulate API call
     const data = {
       email: email.current.value,
       password: password.current.value,
     };
+
+    if (!validate(data)) {
+      return;
+    }
+
     const response = await fetch("http://localhost:3002/api/v1/user/signin", {
       method: "POST",
       body: JSON.stringify(data),
@@ -36,11 +42,11 @@ export default function SignIn() {
       credentials: "include",
     });
     const user = await response.json();
+    toast.dismiss();
 
     if (user.error) {
-      toast.dismiss(user.error);
+      toast.error("Failed to Login");
     } else {
-      toast.dismiss();
       toast.success("Logged In");
       dispatch(setIsAuthenticated());
     }
@@ -71,6 +77,11 @@ export default function SignIn() {
             ref={email}
             className=" w-full rounded-md border border-input bg-background px-4 py-3 text-foreground shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
           />
+          {errors && (
+            <span className="pt-4 text-red-500 text-sm italic">
+              {errors.email}
+            </span>
+          )}
         </div>
 
         <label className=" text-sm font-medium text-foreground">Password</label>
@@ -81,6 +92,11 @@ export default function SignIn() {
             ref={password}
             className=" w-full rounded-md border border-input bg-background px-4 py-3 text-foreground shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
           />
+          {errors && (
+            <span className="pt-4 text-red-500 text-sm italic">
+              {errors.password}
+            </span>
+          )}
         </div>
 
         <motion.div

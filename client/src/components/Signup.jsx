@@ -10,6 +10,7 @@ import AuthHeader from "../components/ui/AuthHeader";
 import AuthButton from "../components/ui/AuthButton";
 
 import { addUser } from "../utils/userSlice";
+import useValidation from "../hooks/useFormDataValidator";
 
 export default function SignUp() {
   const fullName = useRef();
@@ -20,14 +21,14 @@ export default function SignUp() {
   const dispatch = useDispatch();
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const { errors, validate } = useValidation();
 
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    toast.loading("Submitting...");
+    toast.loading("Signing up...");
     setLoading(true);
 
     const data = {
@@ -36,7 +37,10 @@ export default function SignUp() {
       email: email.current.value,
       password: password.current.value,
     };
-
+    if (!validate(data)) {
+      toast.dismiss();
+      return;
+    }
     const response = await fetch("http://localhost:3002/api/v1/user/signup", {
       method: "POST",
       body: JSON.stringify(data),
@@ -45,14 +49,14 @@ export default function SignUp() {
       },
     });
 
+    const user = await response.json();
     toast.dismiss();
 
-    const user = await response.json();
     if (user.error) {
-      toast.error(user.error);
+      toast.error("Error Signing up !!!");
       setError(user.error);
     } else {
-      toast.success("User created");
+      toast.success("User created. Please Login to continue...");
       dispatch(addUser(user.data));
     }
 
@@ -82,6 +86,11 @@ export default function SignUp() {
             ref={fullName}
             className="block w-full rounded-md border border-input bg-background px-4 py-3 text-foreground shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
           />
+          {errors && (
+            <span className="pt-4 text-red-500 text-sm italic">
+              {errors.name}
+            </span>
+          )}
         </div>
 
         <label className=" text-sm font-medium text-foreground">Username</label>
@@ -92,6 +101,11 @@ export default function SignUp() {
             ref={username}
             className="block w-full rounded-md border border-input bg-background px-4 py-3 text-foreground shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
           />
+          {errors && (
+            <span className="pt-4 text-red-500 text-sm italic">
+              {errors.username}
+            </span>
+          )}
         </div>
 
         <label className=" text-sm font-medium text-foreground">Email</label>
@@ -102,6 +116,11 @@ export default function SignUp() {
             ref={email}
             className="block w-full rounded-md border border-input bg-background px-4 py-3 text-foreground shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
           />
+          {errors && (
+            <span className="pt-4 text-red-500 text-sm italic">
+              {errors.email}
+            </span>
+          )}
         </div>
 
         <label className=" text-sm font-medium text-foreground">Password</label>
@@ -112,10 +131,13 @@ export default function SignUp() {
             ref={password}
             className=" w-full rounded-md border border-input bg-background px-4 py-3 text-foreground shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
           />
+          {errors && (
+            <span className="pt-4 text-red-500 text-sm italic">
+              {errors.password}
+            </span>
+          )}
         </div>
-        {error && (
-          <span className="text-sm text-red-700 pt-4 italic">{error}</span>
-        )}
+
         <AuthButton type="submit" className="w-full" delay={5}>
           Create Account
         </AuthButton>
