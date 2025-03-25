@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { ChatComponent } from "./ChatComponent";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -8,6 +8,7 @@ import DocGPTIntro from "./DocGPTIntro";
 // import PDFViewer from "./SleekPdfViewer";
 
 const ChatInterface = () => {
+  const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
   // if there is document, show chat component
   // else display - How can I help you today?
@@ -18,6 +19,10 @@ const ChatInterface = () => {
   // console.log("i am documentid", documentId);
   const { id } = useParams();
   console.log("i am document id", id);
+
+  const handleLoadingChange = (loadingStatus) => {
+    setIsLoading(loadingStatus);
+  };
 
   //TODO: it needs some optimizations...
   useEffect(() => {
@@ -36,7 +41,11 @@ const ChatInterface = () => {
       const histories = await data.json();
       console.log(histories);
       //dispatch addMessages() action
-      dispatch(addMessage(histories.data));
+      if (histories.data.length !== 0) {
+        for (let i = 0; i < histories.data.length; i++) {
+          dispatch(addMessage(histories.data[i]));
+        }
+      }
     };
     fetchData();
   }, [id]);
@@ -47,13 +56,13 @@ const ChatInterface = () => {
         {/* <PDFViewer /> */}
         <div className="relative z-0">
           {chat !== undefined && id !== undefined ? (
-            <ChatComponent />
+            <ChatComponent isLoading={isLoading} />
           ) : (
             <DocGPTIntro />
           )}
         </div>
       </main>
-      <TinyGradientFooter id={id} />
+      <TinyGradientFooter id={id} onLoadingChange={handleLoadingChange} />
     </div>
   );
 };

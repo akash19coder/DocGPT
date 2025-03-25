@@ -12,11 +12,11 @@ import {
 import { getSplitDocument } from "../utils/splitDocument.js";
 import { getUserUploadedFileName } from "../utils/userUploadedFileName.js";
 
-import { Queue } from "bullmq";
-import { Worker } from "bullmq";
-import { connection } from "../utils/worker.js";
+// import { Queue } from "bullmq";
+// import { Worker } from "bullmq";
+// import { connection } from "../utils/worker.js";
 
-const queue = new Queue("document", { connection });
+// const queue = new Queue("document", { connection });
 
 export const uploadDocument = async (req, res) => {
   // 1. Receiving file
@@ -73,9 +73,7 @@ export const uploadDocument = async (req, res) => {
   const newChat = await Chat.create({
     userId: req.user._id,
     documentId: newDocument._id,
-    conversation: [
-      { role: "system", content: "How can I help with the document?" },
-    ],
+    conversation: [],
   });
 
   if (!newChat) {

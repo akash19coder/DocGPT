@@ -9,7 +9,7 @@ import { useDispatch } from "react-redux";
 import { addDocument } from "../utils/documentSlice";
 import { addMessage } from "../utils/chatSlice";
 
-export function TinyGradientFooter({ id }) {
+export function TinyGradientFooter({ id, onLoadingChange }) {
   const [selectedFile, setSelectedFile] = useState(null);
 
   const navigate = useNavigate();
@@ -45,7 +45,7 @@ export function TinyGradientFooter({ id }) {
         content: messageRef.current.value,
       })
     );
-
+    onLoadingChange(true);
     const response = await fetch(
       `http://localhost:3002/api/v1/chat/normal-reply/${id}`,
       {
@@ -59,6 +59,7 @@ export function TinyGradientFooter({ id }) {
     );
     const data = await response.json();
     console.log("i a data", data.answer);
+    onLoadingChange(false);
     dispatch(addMessage({ role: "system", content: data.answer }));
   };
 

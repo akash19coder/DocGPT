@@ -8,7 +8,9 @@ const chatSlice = createSlice({
   reducers: {
     addMessage: (state, action) => {
       if (action.payload !== null || action.payload !== undefined) {
-        state.messages.push(action.payload);
+        if (!state.messages.includes(action.payload)) {
+          state.messages.push(action.payload);
+        }
       }
     },
   },
