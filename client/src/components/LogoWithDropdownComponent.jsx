@@ -89,15 +89,15 @@ export function LogoWithDropdownComponent({ width = 200, height = 50 } = {}) {
             </motion.text>
           </motion.g>
         </svg>
-        <button
+        {/* <button
           onClick={() => setIsOpen(!isOpen)}
           className="ml-2 flex items-center text-gray-700 hover:text-gray-900 focus:outline-none"
         >
           <ChevronDown size={20} />
-        </button>
+        </button> */}
       </div>
 
-      <AnimatePresence>
+      {/* <AnimatePresence>
         {isOpen && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
@@ -151,7 +151,7 @@ export function LogoWithDropdownComponent({ width = 200, height = 50 } = {}) {
             </div>
           </motion.div>
         )}
-      </AnimatePresence>
+      </AnimatePresence> */}
     </div>
   );
 }

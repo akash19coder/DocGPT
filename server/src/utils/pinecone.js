@@ -12,6 +12,7 @@ export const upsertVectorToPinecone = async (embeddings, namespace) => {
     // Upsert vectors with namespace per user
     const upsertResponse = await index.namespace(namespace).upsert(embeddings);
     console.log(upsertResponse);
+    console.log("upsert done");
     return upsertResponse;
   } catch (error) {
     console.error("Error upserting vectors to Pinecone:", error);

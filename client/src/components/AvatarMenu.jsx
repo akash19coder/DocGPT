@@ -1,5 +1,3 @@
-"use client";
-
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -32,7 +30,7 @@ export function AvatarMenu() {
         <PopoverContent className="w-80" align="end">
           <div className="flex flex-col space-y-4">
             <div className="flex items-center space-x-4">
-              <Avatar className="h-12 w-12">
+              <Avatar className="h-12 w-12 rounded-lg ">
                 <AvatarImage src="/placeholder.svg" alt="@user" />
                 <AvatarFallback>U</AvatarFallback>
               </Avatar>

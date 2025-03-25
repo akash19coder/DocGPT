@@ -1,14 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowUpRight } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { FaGoogleDrive } from "react-icons/fa";
 import { SiNotion } from "react-icons/si";
 import { PiMicrosoftOutlookLogoFill } from "react-icons/pi";
@@ -18,49 +10,13 @@ import { addDocument } from "../utils/documentSlice";
 import { addMessage } from "../utils/chatSlice";
 
 export function TinyGradientFooter({ id }) {
-  const [hoveredButton, setHoveredButton] = useState(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
-  const [documentId, setDocumentId] = useState(null);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const fileRef = useRef();
   const messageRef = useRef();
-
-  // const gradientButtons = [
-  //   {
-  //     text: "Simplifications",
-  //     key: "simplify",
-  //   },
-  //   {
-  //     text: "Summarize",
-  //     key: "summarize",
-  //   },
-  //   {
-  //     text: "Definition Search",
-  //     key: "define",
-  //   },
-  // ];
-
-  const uploadOptions = [
-    {
-      text: "Upload from Local Computer",
-      key: "drive",
-      icon: <FaGoogleDrive />,
-    },
-    {
-      text: "Upload from Notion",
-      key: "notion",
-      icon: <SiNotion />,
-    },
-    {
-      text: "Upload from Microsoft Outlook",
-      key: "outlook",
-      icon: <PiMicrosoftOutlookLogoFill />,
-    },
-  ];
 
   const handleFile = () => {
     fileRef.current.click();
@@ -146,29 +102,7 @@ export function TinyGradientFooter({ id }) {
   }, [selectedFile]);
 
   return (
-    <div className="w-full max-w-3xl mx-auto">
-      {/* TODO: Implement it later on */}
-      {/* <div className="flex justify-center space-x-3 mb-6">
-        {gradientButtons.map((button) => (
-          <button
-            key={button.key}
-            className={`px-2  rounded-full text-gray-800 text-xs font-medium 
-                        bg-gradient-to-r from-pink-200 to-red-200
-                        transition-all duration-300 ease-in-out
-                        flex items-center space-x-1 border border-pink-300
-                        ${
-                          hoveredButton === button.key
-                            ? "shadow-sm bg-gradient-to-r from-pink-300 to-red-300"
-                            : "opacity-90"
-                        }`}
-            onMouseEnter={() => setHoveredButton(button.key)}
-            onMouseLeave={() => setHoveredButton(null)}
-          >
-            <span>{button.text}</span>
-            <ArrowUpRight className="w-2.5 h-2.5" />
-          </button>
-        ))}
-      </div> */}
+    <div className="w-full max-w-3xl mx-auto p-2">
       <div className="flex items-center space-x-2 bg-muted rounded-lg">
         {/* <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild> */}

@@ -4,7 +4,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { TinyGradientFooter } from "./TinyGradientFooter";
 import { addMessage } from "../utils/chatSlice";
-import PDFViewer from "./SleekPdfViewer";
+import DocGPTIntro from "./DocGPTIntro";
+// import PDFViewer from "./SleekPdfViewer";
 
 const ChatInterface = () => {
   const dispatch = useDispatch();
@@ -42,15 +43,14 @@ const ChatInterface = () => {
 
   return (
     <div className="flex flex-col flex-grow">
-      <main className="flex flex-row justify-evenly h-[80vh] flex-grow p-6 overflow-auto">
-        <PDFViewer url={document.cloudinary_url} />
+      <main className="flex flex-row justify-evenly h-[75vh] flex-grow p-2 overflow-auto">
+        {/* <PDFViewer /> */}
         <div className="relative z-0">
           {chat !== undefined && id !== undefined ? (
             <ChatComponent />
           ) : (
-            "How can I help you?"
+            <DocGPTIntro />
           )}
-          ;
         </div>
       </main>
       <TinyGradientFooter id={id} />

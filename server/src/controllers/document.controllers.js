@@ -12,7 +12,14 @@ import {
 import { getSplitDocument } from "../utils/splitDocument.js";
 import { getUserUploadedFileName } from "../utils/userUploadedFileName.js";
 
+import { Queue } from "bullmq";
+import { Worker } from "bullmq";
+import { connection } from "../utils/worker.js";
+
+const queue = new Queue("document", { connection });
+
 export const uploadDocument = async (req, res) => {
+  // 1. Receiving file
   const { originalname } = req.file;
   const username = req.user.username;
   if (!username) {
@@ -26,6 +33,7 @@ export const uploadDocument = async (req, res) => {
     throw new Error("file path invalid");
   }
 
+  // 2. Uploading File To Cloudinary
   const fileUploadResult = await uploadFileOnCloudinary(filePath);
 
   //TODO: convert each util into promises and do then()
@@ -39,14 +47,17 @@ export const uploadDocument = async (req, res) => {
     throw new Error("Unavailable split document");
   }
 
+  // 3. embedding document
   const embedDocument = await getEmbedDocument(splitDocument, originalname);
   if (!embedDocument) {
     throw new Error("Unavailable embed Document");
   }
+
+  // 4. Upserting to Pinecone
   const response = await upsertVectorToPinecone(embedDocument, username);
   console.log(response);
 
-  // Create a new document record in MongoDB
+  // 5. Create a new document record in MongoDB
   const newDocument = await Document.create({
     name: originalname,
     size: req.file.size,
@@ -62,7 +73,9 @@ export const uploadDocument = async (req, res) => {
   const newChat = await Chat.create({
     userId: req.user._id,
     documentId: newDocument._id,
-    conversation: [],
+    conversation: [
+      { role: "system", content: "How can I help with the document?" },
+    ],
   });
 
   if (!newChat) {
@@ -70,6 +83,37 @@ export const uploadDocument = async (req, res) => {
   }
 
   res.status(200).json(newDocument);
+};
+
+export const uploadDocumentQueue = async (req, res) => {
+  try {
+    const { originalname } = req.file;
+    const username = req.user.username;
+    if (!username) {
+      return res.status(400).json("Invalid username");
+    }
+
+    const fileName = getUserUploadedFileName(username); // update it with req.user.username; using cookies
+
+    const filePath = `${process.cwd()}/data/${username}/${fileName[0]}`;
+    if (!filePath) {
+      throw new Error("file path invalid");
+    }
+    // 2. Uploading File To Cloudinary
+    const result = await uploadFileOnCloudinary(filePath);
+    queue.add("documentUpload", {
+      filePath: filePath,
+      filename: originalname,
+      username: username,
+    });
+
+    res.status(202).json({
+      message: "processing started",
+      fileUrl: result.secure_url,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
 
 export const deleteDocument = async (req, res) => {

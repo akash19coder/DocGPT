@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Document, Page, pdfjs } from "react-pdf";
 import {
   ChevronLeft,
   ChevronRight,
@@ -12,18 +11,9 @@ import {
   Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-// import * as pdfJS from "pdfjs-dist";
-// import pdfJSWorkerURL from "pdfjs-dist/build/pdf.worker?url";
-// pdfJS.GlobalWorkerOptions.workerSrc = pdfJSWorkerURL;
+import PDFViewer from "pdf-viewer-reactjs";
 
-// Set up the worker for react-pdf
-pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-  "pdfjs-dist/build/pdf.worker.min.mjs",
-  import.meta.url
-).toString();
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
-
-export default function PDFViewer({
+export default function PDFViewerComponent({
   url = "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
   defaultScale = 1.0,
 }) {
@@ -166,7 +156,7 @@ export default function PDFViewer({
       </div>
 
       {/* PDF Viewer */}
-      <div
+      {/* <div
         ref={containerRef}
         className="flex-1 overflow-auto bg-gray-100 flex items-center justify-center p-4"
       >
@@ -214,7 +204,12 @@ export default function PDFViewer({
             )}
           </Document>
         )}
-      </div>
+      </div> */}
+      <PDFViewer
+        document={{
+          url: "https://arxiv.org/pdf/quant-ph/0410100.pdf",
+        }}
+      />
     </div>
   );
 }
