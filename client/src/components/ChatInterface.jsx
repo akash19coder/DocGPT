@@ -5,6 +5,7 @@ import { useParams } from "react-router-dom";
 import { TinyGradientFooter } from "./TinyGradientFooter";
 import { addMessage } from "../utils/chatSlice";
 import DocGPTIntro from "./DocGPTIntro";
+import LoadingWave from "./LoadingWave";
 // import PDFViewer from "./SleekPdfViewer";
 
 const ChatInterface = () => {
@@ -54,7 +55,7 @@ const ChatInterface = () => {
     <div className="flex flex-col flex-grow">
       <main className="flex flex-row justify-evenly h-[75vh] flex-grow p-2 overflow-auto">
         {/* <PDFViewer /> */}
-        <div className="relative z-0">
+        <div className="relative z-0 h-max">
           {chat !== undefined && id !== undefined ? (
             <ChatComponent isLoading={isLoading} />
           ) : (

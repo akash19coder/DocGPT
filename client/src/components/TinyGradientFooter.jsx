@@ -59,6 +59,7 @@ export function TinyGradientFooter({ id, onLoadingChange }) {
     );
     const data = await response.json();
     console.log("i a data", data.answer);
+    messageRef.current.value = "";
     onLoadingChange(false);
     dispatch(addMessage({ role: "system", content: data.answer }));
   };

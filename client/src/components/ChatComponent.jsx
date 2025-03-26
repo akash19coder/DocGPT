@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { LogoAvatarComponent } from "./LogoAvatarComponent";
 import {
@@ -12,6 +12,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { useSelector } from "react-redux";
 import LoadingWave from "./LoadingWave";
+import ReactMarkdown from "react-markdown";
 
 export function ChatComponent({ isLoading }) {
   // Fallback state for when Redux is not available
@@ -21,7 +22,7 @@ export function ChatComponent({ isLoading }) {
 
   // State to hold messages, initialized with fallback
   const [messages, setMessages] = useState(fallbackMessages);
-
+  const chatRef = useRef();
   // Attempt to get messages from Redux
   let storeMessages;
   try {
@@ -39,6 +40,10 @@ export function ChatComponent({ isLoading }) {
       setMessages(fallbackMessages);
     }
   }, [storeMessages, fallbackMessages]);
+
+  useEffect(() => {
+    chatRef.current.scrollTop = chatRef.current.scrollHeight;
+  }, [messages]);
 
   return (
     <Card className="max-w-2xl mx-auto border border-gray-200 shadow-md rounded-lg overflow-hidden">
@@ -60,7 +65,10 @@ export function ChatComponent({ isLoading }) {
         </div>
       </CardHeader>
 
-      <CardContent className="p-4 bg-white min-h-[400px] max-h-[400px] overflow-y-auto">
+      <CardContent
+        ref={chatRef}
+        className="p-4 bg-white min-h-[400px] max-h-[400px] overflow-y-auto"
+      >
         {messages && messages.length > 0 ? (
           <div className="space-y-4">
             {messages.map((message, index) => (
@@ -102,7 +110,9 @@ export function ChatComponent({ isLoading }) {
                     <p className="font-semibold text-sm mb-1">
                       {message?.username || "DocGPT"}
                     </p>
-                    <p className="text-sm">{message.content}</p>
+                    <p className="text-sm">
+                      <ReactMarkdown>{message.content}</ReactMarkdown>
+                    </p>
                     <div className="text-xs mt-2 opacity-70 text-right">
                       {new Date().toLocaleTimeString([], {
                         hour: "2-digit",
@@ -134,7 +144,6 @@ export function ChatComponent({ isLoading }) {
             </div>
           </div>
         )}
-        <LoadingWave dotCount={3} dotSize="sm" color="muted" />
       </CardContent>
 
       <CardFooter className="p-4 bg-gray-50 border-t border-gray-200">
