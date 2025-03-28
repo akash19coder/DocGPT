@@ -5,7 +5,6 @@ import AuthLayout from "../components/ui/AuthLayout";
 import AuthHeader from "../components/ui/AuthHeader";
 import AuthButton from "../components/ui/AuthButton";
 import { useDispatch } from "react-redux";
-import { setIsAuthenticated } from "../utils/userSlice";
 import toast, { Toaster } from "react-hot-toast";
 import useValidation from "../hooks/useFormDataValidator";
 
@@ -48,7 +47,6 @@ export default function SignIn() {
       toast.error("Failed to Login");
     } else {
       toast.success("Logged In");
-      dispatch(setIsAuthenticated());
     }
 
     setTimeout(() => {

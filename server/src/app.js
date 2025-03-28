@@ -35,9 +35,11 @@ app.use(cookieParser(process.env.COOKIE_SECRET));
 import userRoutes from "./routes/user.routes.js";
 import uploadRoutes from "./routes/upload.routes.js";
 import chatRoutes from "./routes/chat.routes.js";
+import paymentRoutes from "./routes/payment.routes.js";
 
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/document", uploadRoutes);
 app.use("/api/v1", chatRoutes);
+app.use("/api/v1", paymentRoutes);
 
 export { app };

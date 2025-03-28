@@ -31,7 +31,7 @@ const DocumentSchema = new mongoose.Schema(
       validate: {
         validator: function (value) {
           // Basic validation for cloudinary public ID format
-          return validator.isLength(value, { min: 1, max: 100 });
+          return validator.isLength(value, { min: 1, max: 1000 });
         },
         message: "Invalid Cloudinary url format",
       },

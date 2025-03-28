@@ -1,14 +1,28 @@
 import { Outlet, Navigate } from "react-router-dom";
-import { useSelector } from "react-redux";
-import React from "react";
+import { useSelector, useDispatch } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { addUser } from "../utils/userSlice";
 
 const ProtectedRoute = () => {
-  //write authenticated logic here...it is going to come from Redux Store...
-  console.log(document.cookie);
+  const [isAuthenticated, setIsAuthenticated] = useState();
+  const dispatch = useDispatch();
 
-  const isAuthenticated = true;
-  // const isAuthenticated = useSelector((store) => store.user.isAuthenticated);
-  console.log(isAuthenticated);
+  useEffect(() => {
+    const checkAuthenticated = async () => {
+      const response = await fetch("http://localhost:3002/api/v1/user/profile");
+
+      const data = await response.json();
+      console.log("i am from protected route", data);
+      if (data.error) {
+        setIsAuthenticated(false);
+        return;
+      }
+      setIsAuthenticated(true);
+      dispatch(addUser(data.user));
+    };
+    checkAuthenticated();
+  }, []);
+  console.log("i am console.log");
   return isAuthenticated ? <Outlet /> : <Navigate to="/login" />;
 };
 

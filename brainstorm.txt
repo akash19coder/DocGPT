@@ -77,3 +77,9 @@ Challenge #1 today --> Cookie Not being set in Frontend
 ------------------------------------------------------------------------------------------
 > test update and delete apis
 > implement chat APIS and make it consistent across all edge cases
+
+-----------------------------------------------------------------------------------------
+- automatic pdf url update from store
+- unlink file after upload
+- make responsive for mobile
+

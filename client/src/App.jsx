@@ -16,6 +16,12 @@ import LandingPage from "./components/LandingPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import store from "./utils/Store";
 
+import { pdfjs } from "react-pdf";
+import Payment from "./components/Payment";
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  "pdfjs-dist/build/pdf.worker.min.js",
+  import.meta.url
+).toString();
 function App() {
   return (
     <Provider store={store}>
@@ -28,6 +34,7 @@ function App() {
               <Route path="/chat/:id" element={<Chat />} />
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/payment" element={<Payment />} />
             </Route>
             <Route path="/login" element={<LoginForm />} />
             <Route path="/signup" element={<SignupForm />} />

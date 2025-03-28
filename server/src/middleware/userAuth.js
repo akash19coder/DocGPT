@@ -5,7 +5,7 @@ export const userAuth = async (req, res, next) => {
   console.log("i am token", token);
 
   if (!token) {
-    return res.status(400).json("Unauthorized user");
+    return res.status(400).json({ error: "Unauthorized user" });
   }
   try {
     const user = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);

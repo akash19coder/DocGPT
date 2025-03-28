@@ -8,9 +8,13 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addDocument } from "../utils/documentSlice";
 import { addMessage } from "../utils/chatSlice";
+import { FileUploadModal } from "./FileUpload";
 
 export function TinyGradientFooter({ id, onLoadingChange }) {
   const [selectedFile, setSelectedFile] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [uploadStatus, setUploadStatus] = useState("idle");
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -73,7 +77,20 @@ export function TinyGradientFooter({ id, onLoadingChange }) {
         return;
       }
       form.append("pdfName", selectedFile);
+      setIsModalOpen(true);
+      setUploadStatus("uploading");
+      setUploadProgress(0);
 
+      // Simulate progress updates
+      const progressInterval = setInterval(() => {
+        setUploadProgress((prev) => {
+          if (prev >= 95) {
+            clearInterval(progressInterval);
+            return 95;
+          }
+          return prev + 5;
+        });
+      }, 300);
       console.log(form.get("pdfName"));
 
       const response = await fetch(
@@ -93,6 +110,17 @@ export function TinyGradientFooter({ id, onLoadingChange }) {
       const data = await response.json();
 
       console.log(data);
+
+      if (data) {
+        // Clear the interval and set final progress
+        clearInterval(progressInterval);
+
+        setUploadProgress(100);
+        // Small delay to show 100% before showing success
+        setTimeout(() => {
+          setUploadStatus("success");
+        }, 400);
+      }
       // setDocumentId(data._id);
       dispatch(
         addMessage({ role: "system", content: "How can i help you today?" })
@@ -168,6 +196,21 @@ export function TinyGradientFooter({ id, onLoadingChange }) {
           Send
         </Button>
       </div>
+      <FileUploadModal
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          if (uploadStatus === "success" || uploadStatus === "error") {
+            // Reset status after closing if completed or failed
+            setTimeout(() => setUploadStatus("idle"), 300);
+          }
+        }}
+        fileName="document.pdf"
+        fileSize={2.4}
+        uploadStatus={uploadStatus}
+        uploadProgress={uploadProgress}
+        errorMessage="Server rejected the file. Please try again."
+      />
     </div>
   );
 }

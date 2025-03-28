@@ -17,7 +17,7 @@ export function HeroSection() {
         </h1>
         <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
           Empowering Your Journey as a Student, Researcher and Content Script
-          Writer by providing an AI Powered Document Parsing Tool.
+          Writer by providing an AI Powered Document QnA Tool.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <button className="bg-white text-black font-semibold py-3 px-6 rounded-lg text-lg hover:bg-gray-200 transition duration-300 flex items-center justify-center">

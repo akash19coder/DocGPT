@@ -1,215 +1,157 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import {
-  ChevronLeft,
-  ChevronRight,
-  ZoomIn,
-  ZoomOut,
-  RotateCw,
-  Download,
-  Loader2,
-} from "lucide-react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import PDFViewer from "pdf-viewer-reactjs";
+import { Card, CardContent } from "@/components/ui/card";
+import { ZoomIn, ZoomOut, RotateCw, FileWarning, Download } from "lucide-react";
+import { Document, Page } from "react-pdf";
 
-export default function PDFViewerComponent({
-  url = "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
-  defaultScale = 1.0,
-}) {
+const PdfViewer = ({
+  pdfUrl = "https://res.cloudinary.com/dmyjhicsl/raw/upload/v1742982410/67da7e472b83d2e7da95bc75/Coding%20Task.pdf",
+  className = "",
+}) => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [scale, setScale] = useState(1);
+  const [rotation, setRotation] = useState(0);
   const [numPages, setNumPages] = useState();
   const [pageNumber, setPageNumber] = useState(1);
-  const [scale, setScale] = useState(defaultScale);
-  const [rotation, setRotation] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState();
 
-  const containerRef = useRef(null);
-
-  const onDocumentLoadSuccess = ({ numPages }) => {
+  function onDocumentLoadSuccess({ numPages }) {
     setNumPages(numPages);
-    setLoading(false);
-    setError(null);
+  }
+
+  // Handle iframe load events
+  const handleIframeLoad = () => {
+    setIsLoading(false);
   };
 
-  const onDocumentLoadError = (error) => {
-    console.error("Error loading PDF:", error);
-    setError(error);
-    setLoading(false);
+  const handleIframeError = () => {
+    setError(new Error("Failed to load PDF"));
+    setIsLoading(false);
   };
 
-  const previousPage = () => {
-    setPageNumber((prevPageNumber) => Math.max(prevPageNumber - 1, 1));
-  };
-
-  const nextPage = () => {
-    setPageNumber((prevPageNumber) =>
-      Math.min(prevPageNumber + 1, numPages || 1)
-    );
-  };
-
-  const zoomIn = () => {
-    setScale((prevScale) => Math.min(prevScale + 0.2, 3));
-  };
-
-  const zoomOut = () => {
-    setScale((prevScale) => Math.max(prevScale - 0.2, 0.5));
-  };
-
-  const rotate = () => {
-    setRotation((prevRotation) => (prevRotation + 90) % 360);
-  };
-
-  const downloadPDF = () => {
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = url.split("/").pop() || "document.pdf";
-    link.click();
-  };
-
-  // Handle keyboard navigation
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === "ArrowRight") nextPage();
-      else if (e.key === "ArrowLeft") previousPage();
-      else if (e.key === "+") zoomIn();
-      else if (e.key === "-") zoomOut();
+  // Apply zoom and rotation using CSS transform
+  const getTransformStyle = () => {
+    return {
+      transform: `scale(${scale}) rotate(${rotation}deg)`,
+      transformOrigin: "center center",
+      transition: "transform 0.2s ease",
     };
+  };
 
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [numPages]);
+  function zoomIn() {
+    setScale((prevScale) => Math.min(prevScale + 0.2, 3));
+  }
+
+  function zoomOut() {
+    setScale((prevScale) => Math.max(prevScale - 0.2, 0.6));
+  }
+
+  function rotate() {
+    setRotation((prevRotation) => (prevRotation + 90) % 360);
+  }
 
   return (
-    <div className="flex flex-col h-full w-[30vw] bg-white rounded-lg shadow-sm overflow-hidden">
-      {/* Toolbar */}
-      <div className="flex items-center justify-between p-2 border-b bg-gray-50">
-        <div className="flex items-center space-x-2">
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={previousPage}
-            disabled={pageNumber <= 1}
-            aria-label="Previous page"
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
+    <Card className={`flex flex-col h-full overflow-hidden ${className}`}>
+      <CardContent className="flex-1 p-4 overflow-hidden flex flex-col">
+        <div className="flex-1 overflow-auto relative flex items-center justify-center bg-gray-50 dark:bg-gray-900 rounded-md">
+          {isLoading && (
+            <div className="absolute inset-0 flex items-center justify-center z-10"></div>
+          )}
 
-          <span className="text-sm">
-            {pageNumber} / {numPages || "?"}
-          </span>
-
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={nextPage}
-            disabled={pageNumber >= (numPages || 1)}
-            aria-label="Next page"
-          >
-            <ChevronRight className="h-4 w-4" />
-          </Button>
+          {error ? (
+            <div className="flex flex-col items-center justify-center text-center p-6 text-muted-foreground">
+              <FileWarning className="h-12 w-12 mb-4 text-destructive" />
+              <h3 className="text-lg font-medium mb-2">Failed to load PDF</h3>
+              <p className="max-w-md mb-4">
+                There was an error loading the PDF document. Please try again or
+                check if the file is accessible.
+              </p>
+              <Button
+                variant="outline"
+                onClick={() => window.open(pdfUrl, "_blank")}
+                className="flex items-center gap-2"
+              >
+                <Download className="h-4 w-4" />
+                Download PDF
+              </Button>
+            </div>
+          ) : (
+            <div
+              className="w-full h-full flex items-center justify-center overflow-hidden"
+              style={{
+                maxHeight: "calc(100vh - 200px)",
+              }}
+            >
+              <div className="w-full h-full" style={getTransformStyle()}>
+                <Document file={pdfUrl} onLoadSuccess={onDocumentLoadSuccess}>
+                  <Page
+                    pageNumber={pageNumber}
+                    renderTextLayer={false}
+                    renderAnnotationLayer={false}
+                  />
+                </Document>
+                <p>
+                  Page {pageNumber} of {numPages}
+                </p>
+              </div>
+            </div>
+          )}
         </div>
 
-        <div className="flex items-center space-x-2">
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={zoomOut}
-            disabled={scale <= 0.5}
-            aria-label="Zoom out"
-          >
-            <ZoomOut className="h-4 w-4" />
-          </Button>
+        <div className="flex flex-col sm:flex-row justify-between items-center mt-4 gap-2">
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              onClick={() => window.open(pdfUrl, "_blank")}
+              className="flex items-center gap-2 text-xs sm:text-sm"
+              aria-label="Open PDF in new tab"
+            >
+              <Download className="h-4 w-4" />
+              <span className="hidden sm:inline">Open PDF</span>
+            </Button>
+          </div>
 
-          <span className="text-sm w-16 text-center">
-            {Math.round(scale * 100)}%
-          </span>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={zoomOut}
+              disabled={scale <= 0.6 || error !== null}
+              aria-label="Zoom out"
+            >
+              <ZoomOut className="h-4 w-4" />
+            </Button>
 
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={zoomIn}
-            disabled={scale >= 3}
-            aria-label="Zoom in"
-          >
-            <ZoomIn className="h-4 w-4" />
-          </Button>
+            <span className="text-sm whitespace-nowrap">
+              {Math.round(scale * 100)}%
+            </span>
 
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={rotate}
-            aria-label="Rotate"
-          >
-            <RotateCw className="h-4 w-4" />
-          </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={zoomIn}
+              disabled={scale >= 3 || error !== null}
+              aria-label="Zoom in"
+            >
+              <ZoomIn className="h-4 w-4" />
+            </Button>
 
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={downloadPDF}
-            aria-label="Download"
-          >
-            <Download className="h-4 w-4" />
-          </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={rotate}
+              disabled={error !== null}
+              aria-label="Rotate"
+            >
+              <RotateCw className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
-      </div>
-
-      {/* PDF Viewer */}
-      {/* <div
-        ref={containerRef}
-        className="flex-1 overflow-auto bg-gray-100 flex items-center justify-center p-4"
-      >
-        {loading && (
-          <div className="flex flex-col items-center justify-center text-gray-500">
-            <Loader2 className="h-8 w-8 animate-spin mb-2" />
-            <p>Loading PDF...</p>
-          </div>
-        )}
-
-        {error && (
-          <div className="text-center text-red-500">
-            <p className="font-medium">Error loading PDF</p>
-            <p className="text-sm">{error.message}</p>
-            <p className="text-xs mt-2">
-              Please check that the URL is a valid PDF document.
-            </p>
-          </div>
-        )}
-
-        {!url && !loading && !error && (
-          <div className="text-center text-gray-500">
-            <p>No valid PDF URL provided.</p>
-            <p className="text-sm">Please enter a valid PDF URL to view.</p>
-          </div>
-        )}
-
-        {url && (
-          <Document
-            file={url}
-            onLoadSuccess={onDocumentLoadSuccess}
-            onLoadError={onDocumentLoadError}
-            loading={null}
-            className="shadow-lg"
-          >
-            {numPages && (
-              <Page
-                pageNumber={pageNumber}
-                scale={scale}
-                rotate={rotation}
-                renderTextLayer={false}
-                renderAnnotationLayer={false}
-                className="shadow-lg"
-              />
-            )}
-          </Document>
-        )}
-      </div> */}
-      <PDFViewer
-        document={{
-          url: "https://arxiv.org/pdf/quant-ph/0410100.pdf",
-        }}
-      />
-    </div>
+      </CardContent>
+    </Card>
   );
-}
+};
+
+export default PdfViewer;

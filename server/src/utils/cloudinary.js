@@ -6,10 +6,13 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-export const uploadFileOnCloudinary = async (filepath) => {
+export const uploadFileOnCloudinary = async (filepath, originalName, id) => {
   const uploadResult = await cloudinary.uploader
     .upload(filepath, {
-      public_id: "shoes",
+      public_id: `${originalName}`,
+      resource_type: "raw",
+      asset_folder: id,
+      use_asset_folder_as_public_id_prefix: true,
     })
     .catch((error) => {
       console.log(error);
@@ -27,9 +30,3 @@ export const uploadFileOnCloudinary = async (filepath) => {
 
 //for later use in Cloudinary file upload
 // ,
-//       {
-//         public_id: `${req.locals.originalName}`,
-//         resource_type: "raw",
-//         asset_folder: req.locals.id,
-//         use_asset_folder_as_public_id_prefix: true,
-//       },

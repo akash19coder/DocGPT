@@ -26,19 +26,6 @@ export function NavbarComponent() {
         </Link>
       </div>
       <nav className="flex items-center space-x-6">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="text-white">
-              All Pages
-              <ChevronDown className="ml-2 h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem>Page 1</DropdownMenuItem>
-            <DropdownMenuItem>Page 2</DropdownMenuItem>
-            <DropdownMenuItem>Page 3</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
         <Link className="text-sm font-medium text-white" href="#">
           Features
         </Link>

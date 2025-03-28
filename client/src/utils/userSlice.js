@@ -5,14 +5,10 @@ const userSlice = createSlice({
   name: "user",
   initialState: {
     userDetails: null,
-    isAuthenticated: false,
   },
   reducers: {
     addUser: (state, actions) => {
       state.userDetails = actions.payload;
-    },
-    setIsAuthenticated: (state) => {
-      state.isAuthenticated = !state.isAuthenticated;
     },
     removeUser: (state) => {
       state = null;

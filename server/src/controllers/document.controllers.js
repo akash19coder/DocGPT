@@ -1,3 +1,4 @@
+import fs from "fs";
 import { Chat } from "../models/chat.model.js";
 import { Document } from "../models/document.model.js";
 import { uploadFileOnCloudinary } from "../utils/cloudinary.js";
@@ -34,7 +35,11 @@ export const uploadDocument = async (req, res) => {
   }
 
   // 2. Uploading File To Cloudinary
-  const fileUploadResult = await uploadFileOnCloudinary(filePath);
+  const fileUploadResult = await uploadFileOnCloudinary(
+    filePath,
+    originalname,
+    req.user._id,
+  );
 
   //TODO: convert each util into promises and do then()
   const loadedDocument = await getLoadedDocument(filePath);
@@ -79,6 +84,11 @@ export const uploadDocument = async (req, res) => {
   if (!newChat) {
     throw new Error("Failed to create new chat");
   }
+
+  fs.unlink(filePath, (err) => {
+    if (err) throw err;
+    console.log("path/file.txt was deleted");
+  });
 
   res.status(200).json(newDocument);
 };
