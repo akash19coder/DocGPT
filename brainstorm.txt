@@ -83,3 +83,10 @@ Challenge #1 today --> Cookie Not being set in Frontend
 - unlink file after upload
 - make responsive for mobile
 
+-------------------------------------------------------------------------------------
+- make it mobile responsive(responsive design principles).  
+-  make payment functional.
+- testing (unit, integration, e2e).
+- performanace test and improvement.
+- accessibility test.
+- cross browser compatiblity test.

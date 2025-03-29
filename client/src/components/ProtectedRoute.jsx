@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { addUser } from "../utils/userSlice";
 
 const ProtectedRoute = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState();
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -14,7 +14,7 @@ const ProtectedRoute = () => {
       const data = await response.json();
       console.log("i am from protected route", data);
       if (data.error) {
-        setIsAuthenticated(false);
+        // setIsAuthenticated(false);
         return;
       }
       setIsAuthenticated(true);

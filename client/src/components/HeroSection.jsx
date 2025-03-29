@@ -1,4 +1,5 @@
 import { ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export function HeroSection() {
   return (
@@ -21,7 +22,9 @@ export function HeroSection() {
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <button className="bg-white text-black font-semibold py-3 px-6 rounded-lg text-lg hover:bg-gray-200 transition duration-300 flex items-center justify-center">
-            Get Free Version <ArrowRight className="ml-2 h-5 w-5" />
+            <Link to={"/chat"}>
+              Get Started <ArrowRight className="ml-2 h-5 w-5" />{" "}
+            </Link>
           </button>
           <button className="bg-gray-800 text-white font-semibold py-3 px-6 rounded-lg text-lg hover:bg-gray-700 transition duration-300">
             Get Pro Version

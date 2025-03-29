@@ -54,7 +54,7 @@ export function SidebarComponent() {
         className={`
         flex flex-col h-screen bg-gray-800 text-white
         transition-all duration-300 ease-in-out
-        ${isExpanded ? "w-64" : "w-16"}
+        ${isExpanded && "w-64 h-max"}
       `}
       >
         <div className="p-4 flex items-center justify-between">
@@ -96,7 +96,6 @@ export function SidebarComponent() {
             {isExpanded && <span>History</span>}
           </Button>
         </div>
-
         <div className="p-4">
           <Button
             variant="ghost"
