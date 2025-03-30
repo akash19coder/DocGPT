@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { CreditCard, CheckCircle } from "lucide-react";
+import { BASE_URL } from "../utils/constant";
 
 const Payment = () => {
   const stripe = useStripe();
@@ -18,17 +19,14 @@ const Payment = () => {
     event.preventDefault();
     setProcessing(true);
 
-    const response = await fetch(
-      "http://localhost:3002/api/v1/payment/create-intent",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ amount: 1000, currency: "usd" }),
-        credentials: "include",
-      }
-    );
+    const response = await fetch(`${BASE_URL}/api/v1/payment/create-intent`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ amount: 1000, currency: "usd" }),
+      credentials: "include",
+    });
 
     const data = await response.json();
 

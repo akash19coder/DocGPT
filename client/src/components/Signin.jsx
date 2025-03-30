@@ -7,6 +7,7 @@ import AuthButton from "../components/ui/AuthButton";
 import { useDispatch } from "react-redux";
 import toast, { Toaster } from "react-hot-toast";
 import useValidation from "../hooks/useFormDataValidator";
+import { BASE_URL } from "../utils/constant";
 
 export default function SignIn() {
   const [loading, setLoading] = useState(false);
@@ -32,7 +33,7 @@ export default function SignIn() {
       return;
     }
 
-    const response = await fetch("http://localhost:3002/api/v1/user/signin", {
+    const response = await fetch(`${BASE_URL}/api/v1/user/signin`, {
       method: "POST",
       body: JSON.stringify(data),
       headers: {

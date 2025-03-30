@@ -2,6 +2,7 @@ import { Outlet, Navigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import React, { useEffect, useState } from "react";
 import { addUser } from "../utils/userSlice";
+import { BASE_URL } from "../utils/constant";
 
 const ProtectedRoute = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(true);
@@ -9,7 +10,7 @@ const ProtectedRoute = () => {
 
   useEffect(() => {
     const checkAuthenticated = async () => {
-      const response = await fetch("http://localhost:3002/api/v1/user/profile");
+      const response = await fetch(`${BASE_URL}/api/v1/user/profile`);
 
       const data = await response.json();
       console.log("i am from protected route", data);

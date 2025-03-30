@@ -7,6 +7,7 @@ import InputField from "../components/ui/InputField";
 import AuthButton from "../components/ui/AuthButton";
 import toast, { Toaster } from "react-hot-toast";
 import useValidation from "../hooks/useFormDataValidator";
+import { BASE_URL } from "../utils/constant";
 
 export default function ResetPassword() {
   const [loading, setLoading] = useState(false);
@@ -40,17 +41,14 @@ export default function ResetPassword() {
     }
 
     // Simulate API call
-    const response = await fetch(
-      "http://localhost:3002/api/v1/user/reset-password",
-      {
-        method: "POST",
-        body: JSON.stringify(data),
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-      }
-    );
+    const response = await fetch(`${BASE_URL}/api/v1/user/reset-password`, {
+      method: "POST",
+      body: JSON.stringify(data),
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    });
 
     const reply = await response.json();
     toast.dismiss();

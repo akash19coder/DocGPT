@@ -11,6 +11,7 @@ import AuthButton from "../components/ui/AuthButton";
 
 import { addUser } from "../utils/userSlice";
 import useValidation from "../hooks/useFormDataValidator";
+import { BASE_URL } from "../utils/constant";
 
 export default function SignUp() {
   const fullName = useRef();
@@ -41,7 +42,7 @@ export default function SignUp() {
       toast.dismiss();
       return;
     }
-    const response = await fetch("http://localhost:3002/api/v1/user/signup", {
+    const response = await fetch(`${BASE_URL}/api/v1/user/signup`, {
       method: "POST",
       body: JSON.stringify(data),
       headers: {

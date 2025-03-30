@@ -4,21 +4,16 @@ import { MainComponent } from "./MainComponent";
 
 //              Chat()
 export default function Chat() {
-  const [message, setMessage] = useState("");
-  const handleSend = () => {
-    console.log("Sending message:", message);
-    setMessage("");
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const handleIsExpanded = () => {
+    setIsExpanded(!isExpanded);
   };
 
   return (
     <div className="flex h-screen bg-gray-100">
-      <SidebarComponent />
-
-      {/* <MainComponent/> */}
-
-      {/* <Header/> */}
-      <MainComponent />
-      {/* Footer with file upload and message input */}
+      <SidebarComponent isExpanded={isExpanded} setIsExpanded={setIsExpanded} />
+      <MainComponent isExpanded={isExpanded} setIsExpanded={setIsExpanded} />
     </div>
   );
 }

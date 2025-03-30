@@ -1,14 +1,12 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { FaGoogleDrive } from "react-icons/fa";
-import { SiNotion } from "react-icons/si";
-import { PiMicrosoftOutlookLogoFill } from "react-icons/pi";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addDocument } from "../utils/documentSlice";
 import { addMessage } from "../utils/chatSlice";
 import { FileUploadModal } from "./FileUpload";
+import { BASE_URL } from "../utils/constant";
 
 export function TinyGradientFooter({ id, onLoadingChange }) {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -50,17 +48,14 @@ export function TinyGradientFooter({ id, onLoadingChange }) {
       })
     );
     onLoadingChange(true);
-    const response = await fetch(
-      `http://localhost:3002/api/v1/chat/normal-reply/${id}`,
-      {
-        method: "POST",
-        body: JSON.stringify({ prompt: messageRef.current.value }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-      }
-    );
+    const response = await fetch(`${BASE_URL}/api/v1/chat/normal-reply/${id}`, {
+      method: "POST",
+      body: JSON.stringify({ prompt: messageRef.current.value }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    });
     const data = await response.json();
     console.log("i a data", data.answer);
     messageRef.current.value = "";
@@ -93,19 +88,16 @@ export function TinyGradientFooter({ id, onLoadingChange }) {
       }, 300);
       console.log(form.get("pdfName"));
 
-      const response = await fetch(
-        "http://localhost:3002/api/v1/document/upload",
-        {
-          method: "POST",
-          body: form,
-          credentials: "include",
+      const response = await fetch(`${BASE_URL}/api/v1/document/upload`, {
+        method: "POST",
+        body: form,
+        credentials: "include",
 
-          // TODO: i removed it and it worked why??
-          // headers: {
-          //   "Content-Type": "application/pdf",
-          // },
-        }
-      );
+        // TODO: i removed it and it worked why??
+        // headers: {
+        //   "Content-Type": "application/pdf",
+        // },
+      });
 
       const data = await response.json();
 

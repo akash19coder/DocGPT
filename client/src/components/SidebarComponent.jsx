@@ -10,8 +10,8 @@ import {
 import { UserProfileModal } from "../hooks/user-profile-modal";
 import { ChatHistory } from "./ChatHistory";
 
-export function SidebarComponent() {
-  const [isExpanded, setIsExpanded] = useState(true);
+export function SidebarComponent({ isExpanded, setIsExpanded }) {
+  // const [isExpanded, setIsExpanded] = useState(true);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const historyRef = useRef(null);
@@ -54,7 +54,7 @@ export function SidebarComponent() {
         className={`
         flex flex-col h-screen bg-gray-800 text-white
         transition-all duration-300 ease-in-out
-        ${isExpanded && "w-64 h-max"}
+        ${isExpanded && "w-64 h-max"} ${!isExpanded && "hidden"}
       `}
       >
         <div className="p-4 flex items-center justify-between">

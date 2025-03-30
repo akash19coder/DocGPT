@@ -5,10 +5,10 @@ import { LogoWithDropdownComponent } from "./LogoWithDropdownComponent";
 import { TinyGradientFooter } from "./TinyGradientFooter";
 import ChatInterface from "./ChatInterface";
 
-export function MainComponent() {
+export function MainComponent({ isExpanded, setIsExpanded }) {
   return (
     <div className="flex flex-col flex-grow">
-      <Header />
+      <Header isExpanded={isExpanded} setIsExpanded={setIsExpanded} />
 
       {/* when messages changes */}
       <ChatInterface />

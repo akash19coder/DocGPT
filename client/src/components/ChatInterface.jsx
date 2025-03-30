@@ -7,6 +7,7 @@ import { addMessage } from "../utils/chatSlice";
 import DocGPTIntro from "./DocGPTIntro";
 import LoadingWave from "./LoadingWave";
 import PDFViewer from "./SleekPdfViewer";
+import { BASE_URL } from "../utils/constant";
 
 const ChatInterface = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -31,13 +32,10 @@ const ChatInterface = () => {
     const fetchData = async () => {
       if (id === undefined || id === null) return;
 
-      const data = await fetch(
-        `http://localhost:3002/api/v1/chat/history/${id}`,
-        {
-          method: "GET",
-          credentials: "include",
-        }
-      );
+      const data = await fetch(`${BASE_URL}/api/v1/chat/history/${id}`, {
+        method: "GET",
+        credentials: "include",
+      });
 
       const histories = await data.json();
       console.log(histories);

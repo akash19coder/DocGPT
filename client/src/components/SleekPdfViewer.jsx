@@ -1,157 +1,228 @@
-"use client";
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Document, Page, pdfjs } from "react-pdf";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { ZoomIn, ZoomOut, RotateCw, FileWarning, Download } from "lucide-react";
-import { Document, Page } from "react-pdf";
+import { Slider } from "@/components/ui/slider";
+import {
+  Download,
+  ZoomIn,
+  ZoomOut,
+  ChevronLeft,
+  ChevronRight,
+  RotateCw,
+} from "lucide-react";
 
-const PdfViewer = ({
+export default function PDFViewer({
   pdfUrl = "https://res.cloudinary.com/dmyjhicsl/raw/upload/v1742982410/67da7e472b83d2e7da95bc75/Coding%20Task.pdf",
-  className = "",
-}) => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [scale, setScale] = useState(1);
-  const [rotation, setRotation] = useState(0);
-  const [numPages, setNumPages] = useState();
+  defaultScale = 1.0,
+}) {
+  const [numPages, setNumPages] = useState(null);
   const [pageNumber, setPageNumber] = useState(1);
+  const [scale, setScale] = useState(defaultScale);
+  const [rotation, setRotation] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
+  const [loadError, setLoadError] = useState(false);
+
+  // Check if device is mobile
+  useEffect(() => {
+    const checkIfMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkIfMobile();
+    window.addEventListener("resize", checkIfMobile);
+
+    return () => {
+      window.removeEventListener("resize", checkIfMobile);
+    };
+  }, []);
 
   function onDocumentLoadSuccess({ numPages }) {
     setNumPages(numPages);
+    setIsLoading(false);
   }
 
-  // Handle iframe load events
-  const handleIframeLoad = () => {
+  function onDocumentLoadError(error) {
+    console.error("Error loading PDF:", error);
+    setLoadError(true);
     setIsLoading(false);
-  };
+  }
 
-  const handleIframeError = () => {
-    setError(new Error("Failed to load PDF"));
-    setIsLoading(false);
-  };
+  function changePage(offset) {
+    setPageNumber((prevPageNumber) => {
+      const newPageNumber = prevPageNumber + offset;
+      return newPageNumber >= 1 && newPageNumber <= (numPages || 1)
+        ? newPageNumber
+        : prevPageNumber;
+    });
+  }
 
-  // Apply zoom and rotation using CSS transform
-  const getTransformStyle = () => {
-    return {
-      transform: `scale(${scale}) rotate(${rotation}deg)`,
-      transformOrigin: "center center",
-      transition: "transform 0.2s ease",
-    };
-  };
+  function previousPage() {
+    changePage(-1);
+  }
+
+  function nextPage() {
+    changePage(1);
+  }
 
   function zoomIn() {
     setScale((prevScale) => Math.min(prevScale + 0.2, 3));
   }
 
   function zoomOut() {
-    setScale((prevScale) => Math.max(prevScale - 0.2, 0.6));
+    setScale((prevScale) => Math.max(prevScale - 0.2, 0.5));
   }
 
-  function rotate() {
+  function handleRotate() {
     setRotation((prevRotation) => (prevRotation + 90) % 360);
   }
 
-  return (
-    <Card className={`flex flex-col h-full overflow-hidden ${className}`}>
-      <CardContent className="flex-1 p-4 overflow-hidden flex flex-col">
-        <div className="flex-1 overflow-auto relative flex items-center justify-center bg-gray-50 dark:bg-gray-900 rounded-md">
-          {isLoading && (
-            <div className="absolute inset-0 flex items-center justify-center z-10"></div>
-          )}
+  function downloadPDF() {
+    // Create a link element
+    const link = document.createElement("a");
+    link.href = pdfUrl;
+    link.download = pdfUrl.split("/").pop() || "document.pdf";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
 
-          {error ? (
-            <div className="flex flex-col items-center justify-center text-center p-6 text-muted-foreground">
-              <FileWarning className="h-12 w-12 mb-4 text-destructive" />
-              <h3 className="text-lg font-medium mb-2">Failed to load PDF</h3>
-              <p className="max-w-md mb-4">
-                There was an error loading the PDF document. Please try again or
-                check if the file is accessible.
-              </p>
+  return (
+    <div className="flex flex-col w-full max-w-4xl mx-auto">
+      {/* Controls */}
+      {!loadError && (
+        <div className="sticky top-0 z-10 bg-background border-b p-2 mb-4">
+          <div className="flex flex-wrap gap-1 justify-between items-center">
+            <div className="flex items-center gap-2">
               <Button
                 variant="outline"
-                onClick={() => window.open(pdfUrl, "_blank")}
-                className="flex items-center gap-2"
+                size="icon"
+                onClick={previousPage}
+                disabled={pageNumber <= 1}
+                aria-label="Previous page"
               >
-                <Download className="h-4 w-4" />
-                Download PDF
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+
+              <span className="text-sm">
+                {pageNumber} / {numPages || "?"}
+              </span>
+
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={nextPage}
+                disabled={pageNumber >= (numPages || 1)}
+                aria-label="Next page"
+              >
+                <ChevronRight className="h-4 w-4" />
               </Button>
             </div>
-          ) : (
-            <div
-              className="w-full h-full flex items-center justify-center overflow-hidden"
-              style={{
-                maxHeight: "calc(100vh - 200px)",
-              }}
-            >
-              <div className="w-full h-full" style={getTransformStyle()}>
-                <Document file={pdfUrl} onLoadSuccess={onDocumentLoadSuccess}>
+
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={zoomOut}
+                aria-label="Zoom out"
+              >
+                <ZoomOut className="h-4 w-4" />
+              </Button>
+
+              <div className="w-24 hidden sm:block">
+                <Slider
+                  value={[scale * 100]}
+                  min={50}
+                  max={300}
+                  step={10}
+                  onValueChange={(value) => setScale(value[0] / 100)}
+                  aria-label="Zoom level"
+                />
+              </div>
+
+              <span className="text-xs w-12 text-center">
+                {Math.round(scale * 100)}%
+              </span>
+
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={zoomIn}
+                aria-label="Zoom in"
+              >
+                <ZoomIn className="h-4 w-4" />
+              </Button>
+
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={handleRotate}
+                aria-label="Rotate document"
+              >
+                <RotateCw className="h-4 w-4" />
+              </Button>
+
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={downloadPDF}
+                aria-label="Download PDF"
+              >
+                <Download className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* PDF Document or Fallback */}
+      <div className="flex justify-center overflow-auto">
+        {loadError ? (
+          <h1>Error Loading Document</h1>
+        ) : (
+          <Document
+            file={{
+              url: pdfUrl,
+              httpHeaders: {
+                "Access-Control-Allow-Origin": "*",
+              },
+              withCredentials: false,
+            }}
+            onLoadSuccess={onDocumentLoadSuccess}
+            onLoadError={onDocumentLoadError}
+            loading={
+              <div className="py-12 text-center">Loading document...</div>
+            }
+            error={
+              <div className="py-12 text-center text-red-500">
+                Failed to load PDF document.
+              </div>
+            }
+            className="border rounded-lg shadow-sm"
+          >
+            {isLoading ? (
+              <div className="h-[600px] w-[450px] flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+              </div>
+            ) : (
+              <div className="overflow-auto max-h-[calc(100vh-150px)]">
+                {Array.from(new Array(numPages), (_, index) => (
                   <Page
-                    pageNumber={pageNumber}
+                    key={`page_${index + 1}`}
+                    pageNumber={index + 1}
+                    scale={scale}
+                    rotate={rotation}
+                    width={isMobile ? window.innerWidth - 40 : undefined}
                     renderTextLayer={false}
                     renderAnnotationLayer={false}
+                    className="mb-4"
                   />
-                </Document>
-                <p>
-                  Page {pageNumber} of {numPages}
-                </p>
+                ))}
               </div>
-            </div>
-          )}
-        </div>
-
-        <div className="flex flex-col sm:flex-row justify-between items-center mt-4 gap-2">
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              onClick={() => window.open(pdfUrl, "_blank")}
-              className="flex items-center gap-2 text-xs sm:text-sm"
-              aria-label="Open PDF in new tab"
-            >
-              <Download className="h-4 w-4" />
-              <span className="hidden sm:inline">Open PDF</span>
-            </Button>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={zoomOut}
-              disabled={scale <= 0.6 || error !== null}
-              aria-label="Zoom out"
-            >
-              <ZoomOut className="h-4 w-4" />
-            </Button>
-
-            <span className="text-sm whitespace-nowrap">
-              {Math.round(scale * 100)}%
-            </span>
-
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={zoomIn}
-              disabled={scale >= 3 || error !== null}
-              aria-label="Zoom in"
-            >
-              <ZoomIn className="h-4 w-4" />
-            </Button>
-
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={rotate}
-              disabled={error !== null}
-              aria-label="Rotate"
-            >
-              <RotateCw className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+            )}
+          </Document>
+        )}
+      </div>
+    </div>
   );
-};
-
-export default PdfViewer;
+}
