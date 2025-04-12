@@ -10,14 +10,14 @@ const Header = ({ isExpanded, setIsExpanded }) => {
       <Button
         variant="default"
         size="icon"
-        className={`text-white bg-gray-700 ${isExpanded && "hidden"}`}
+        className={`text-white bg-white ${isExpanded && "hidden"}`}
         onClick={() => setIsExpanded((prev) => !prev)}
         aria-label={isExpanded ? "Collapse sidebar" : "Expand sidebar"}
       >
         {isExpanded ? (
-          <ChevronLeft className={`h-5 w-5 text-white`} />
+          <ChevronLeft className={`h-6 w-6 text-white`} />
         ) : (
-          <ChevronRight className="h-5 w-5 text-white" />
+          <ChevronRight className="h-5 w-5 text-black" />
         )}
       </Button>
       <h1 className="text-2xl font-bold text-white">

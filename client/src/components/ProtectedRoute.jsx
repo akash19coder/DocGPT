@@ -5,25 +5,48 @@ import { addUser } from "../utils/userSlice";
 import { BASE_URL } from "../utils/constant";
 
 const ProtectedRoute = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
 
   useEffect(() => {
     const checkAuthenticated = async () => {
-      const response = await fetch(`${BASE_URL}/api/v1/user/profile`);
+      try {
+        const response = await fetch(`${BASE_URL}/api/v1/user/profile`, {
+          method: "GET",
+          credentials: "include",
+        });
 
-      const data = await response.json();
-      console.log("i am from protected route", data);
-      if (data.error) {
-        // setIsAuthenticated(false);
-        return;
+        if (!response.ok) {
+          console.error(
+            "Authentication check failed with status:",
+            response.status
+          );
+          setIsAuthenticated(false);
+        } else {
+          const data = await response.json();
+          console.log("i am from protected route", data);
+          if (data.error) {
+            setIsAuthenticated(false);
+          } else {
+            setIsAuthenticated(true);
+            dispatch(addUser(data));
+          }
+        }
+      } catch (error) {
+        console.error("Error during authentication check:", error);
+        setIsAuthenticated(false);
+      } finally {
+        setLoading(false);
       }
-      setIsAuthenticated(true);
-      dispatch(addUser(data.user));
     };
     checkAuthenticated();
-  }, []);
-  console.log("i am console.log");
+  }, [dispatch]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   return isAuthenticated ? <Outlet /> : <Navigate to="/login" />;
 };
 

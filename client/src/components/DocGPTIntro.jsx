@@ -2,7 +2,7 @@ import { FileText, Search, Sparkles } from "lucide-react";
 
 const DocGPTIntro = () => {
   return (
-    <div className="w-full max-w-3xl mt-16 rounded-lg bg-gradient-to-r from-blue-50 to-indigo-50 p-6 shadow-sm border border-blue-100">
+    <div className="w-full max-w-3xl rounded-lg bg-gradient-to-r from-blue-50 to-indigo-50 p-6 shadow-sm border border-blue-100">
       <p className="text-center text-gray-700 mb-4">
         Your intelligent document assistant powered by AI
       </p>

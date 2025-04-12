@@ -46,7 +46,7 @@ export function ChatComponent({ isLoading }) {
   }, [messages]);
 
   return (
-    <Card className="w-max mx-auto border border-gray-200 shadow-md rounded-lg overflow-hidden">
+    <Card className="max-w-2xl mx-auto border border-gray-200 shadow-md rounded-lg overflow-hidden">
       <CardHeader className="bg-gray-700 text-white p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">

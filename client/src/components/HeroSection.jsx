@@ -13,10 +13,10 @@ export function HeroSection() {
       </div>
       {/* Hero content */}
       <div className="relative z-10 max-w-4xl h-[100vh] mx-auto flex justify-center flex-col">
-        <h1 className="text-5xl md:text-7xl font-bold text-white mb-4 leading-tight">
+        <h1 className="text-5xl md:text-7xl sm:2xl font-bold text-white mb-4 leading-tight">
           Elevate Your Experience with DocGPT
         </h1>
-        <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
+        <p className="text-sm sm:text-base md:text-lg text-gray-300 mb-8 max-w-2xl mx-auto">
           Empowering Your Journey as a Student, Researcher and Content Script
           Writer by providing an AI Powered Document QnA Tool.
         </p>

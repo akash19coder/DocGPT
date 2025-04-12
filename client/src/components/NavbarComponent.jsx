@@ -34,19 +34,28 @@ export function NavbarComponent() {
       ) : (
         <>
           <nav className="flex items-center space-x-6">
-            <Link className="text-sm font-medium text-white" href="#">
+            <Link
+              className="text-sm sm:text-base md:text-lg font-medium text-white"
+              href="#"
+            >
               Features
             </Link>
-            <Link className="text-sm font-medium text-white" href="#">
+            <Link
+              className="text-sm sm:text-base md:text-lg font-medium text-white"
+              href="#"
+            >
               Pricing
             </Link>
-            <Link className="text-sm font-medium text-white" href="#">
+            <Link
+              className="text-sm sm:text-base md:text-lg font-medium text-white"
+              href="#"
+            >
               Contact Us
             </Link>
           </nav>
           <Button
             onClick={handleSignIn}
-            className="bg-blue-500 text-white hover:bg-blue-600"
+            className="text-sm sm:text-base md:text-lg bg-blue-500 text-white hover:bg-blue-600"
           >
             Sign In
           </Button>

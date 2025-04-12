@@ -9,12 +9,14 @@ import {
 } from "lucide-react";
 import { UserProfileModal } from "../hooks/user-profile-modal";
 import { ChatHistory } from "./ChatHistory";
+import { useNavigate } from "react-router-dom";
 
 export function SidebarComponent({ isExpanded, setIsExpanded }) {
   // const [isExpanded, setIsExpanded] = useState(true);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const historyRef = useRef(null);
+  const navigate = useNavigate();
 
   const toggleSidebar = () => {
     setIsExpanded(!isExpanded);
@@ -30,6 +32,10 @@ export function SidebarComponent({ isExpanded, setIsExpanded }) {
 
   const toggleHistory = () => {
     setIsHistoryOpen(!isHistoryOpen);
+  };
+
+  const handleNewChat = () => {
+    navigate("/chat");
   };
 
   useEffect(() => {
@@ -80,6 +86,7 @@ export function SidebarComponent({ isExpanded, setIsExpanded }) {
             className={`w-full justify-start text-white hover:bg-gray-700 ${
               !isExpanded && "justify-center"
             }`}
+            onClick={handleNewChat}
           >
             <MessageSquarePlus className="h-5 w-5 mr-2" />
             {isExpanded && <span>New Chat</span>}

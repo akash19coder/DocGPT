@@ -14,8 +14,11 @@ import {
   SparklesIcon,
   UserIcon,
 } from "lucide-react";
+import { useSelector } from "react-redux";
 
 export function AvatarMenu() {
+  const user = useSelector((store) => store.user.userDetails);
+
   return (
     <div className=" bg-gray-100">
       <Popover>
@@ -23,7 +26,9 @@ export function AvatarMenu() {
           <Button variant="ghost" className="relative h-8 w-8 rounded-full">
             <Avatar className="h-8 w-8">
               <AvatarImage src="/placeholder.svg" alt="@user" />
-              <AvatarFallback>U</AvatarFallback>
+              <AvatarFallback>
+                {user ? user.email[0].toUpperCase() : "U"}
+              </AvatarFallback>
             </Avatar>
           </Button>
         </PopoverTrigger>
@@ -32,10 +37,14 @@ export function AvatarMenu() {
             <div className="flex items-center space-x-4">
               <Avatar className="h-12 w-12 rounded-lg ">
                 <AvatarImage src="/placeholder.svg" alt="@user" />
-                <AvatarFallback>U</AvatarFallback>
+                <AvatarFallback>
+                  {user ? user.email[0].toUpperCase() : "U"}
+                </AvatarFallback>
               </Avatar>
               <div className="space-y-1">
-                <h4 className="text-sm font-semibold">user@example.com</h4>
+                <h4 className="text-sm font-semibold">
+                  {user ? user.email : "user@example.com"}
+                </h4>
                 <Label className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
                   Free Plan
                 </Label>

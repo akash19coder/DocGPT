@@ -8,6 +8,7 @@ import DocGPTIntro from "./DocGPTIntro";
 import LoadingWave from "./LoadingWave";
 import PDFViewer from "./SleekPdfViewer";
 import { BASE_URL } from "../utils/constant";
+import { FileText } from "lucide-react";
 
 const ChatInterface = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -40,26 +41,53 @@ const ChatInterface = () => {
       const histories = await data.json();
       console.log(histories);
       //dispatch addMessages() action
-      if (histories.data.length !== 0) {
+      if (histories.data && histories.data.length !== 0) {
         for (let i = 0; i < histories.data.length; i++) {
           dispatch(addMessage(histories.data[i]));
         }
       }
     };
     fetchData();
-  }, [id]);
+  }, [id, dispatch]);
 
   return (
-    <div className="flex flex-col flex-grow">
-      <main className=" h-[75vh] flex-grow p-2 overflow-auto">
-        <div className="flex flex-row justify-evenly relative z-0 h-max">
+    <div className="flex flex-col h-[90vh]">
+      <main className="flex-grow p-2 overflow-y-auto">
+        <div className="flex flex-col md:flex-row md:justify-between gap-4 relative z-0">
           {chat !== undefined && id !== undefined ? (
             <>
-              <PDFViewer pdfUrl={document?.cloudinary_url || ""} />
-              <ChatComponent isLoading={isLoading} />
+              <div className="w-full md:w-1/2">
+                <div className="hidden md:block h-full">
+                  <PDFViewer pdfUrl={document?.cloudinary_url || ""} />
+                </div>
+                <div className="block md:hidden p-3 text-center border border-gray-300 rounded-lg mb-4 bg-gray-50 shadow-sm">
+                  <FileText className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+                  <p className="text-sm font-medium text-gray-700">
+                    {document?.name}
+                  </p>
+                  <p className="text-xs text-gray-500 truncate">
+                    {"Current Document"}
+                  </p>
+                  {document?.cloudinary_url && (
+                    <a
+                      href={document.cloudinary_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-2 inline-block text-xs text-blue-600 hover:underline"
+                    >
+                      Open PDF
+                    </a>
+                  )}
+                </div>
+              </div>
+              <div className="w-full md:w-1/2">
+                <ChatComponent isLoading={isLoading} />
+              </div>
             </>
           ) : (
-            <DocGPTIntro />
+            <div className="w-full flex justify-center items-center h-full">
+              <DocGPTIntro />
+            </div>
           )}
         </div>
       </main>
