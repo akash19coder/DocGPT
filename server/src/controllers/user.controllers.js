@@ -99,6 +99,7 @@ export const signinUser = async (req, res) => {
     const options = {
       httpOnly: true,
       secure: true,
+      sameSite: "None",
     };
 
     res

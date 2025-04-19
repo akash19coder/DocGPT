@@ -1,5 +1,5 @@
 import { Outlet, Navigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import React, { useEffect, useState } from "react";
 import { addUser } from "../utils/userSlice";
 import { BASE_URL } from "../utils/constant";
